@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearRegression;
 using MathNet.Numerics.Data.Matlab;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ namespace MRI_RF_TF_Tool {
         Vector<double> TFz= null;
         Vector<Complex> TFSr = null;
         MeasSummary meassum = null;
+        string TFFileFullPath = null;
         public ScaleTFForm() {
             InitializeComponent();
         }
@@ -41,6 +43,7 @@ namespace MRI_RF_TF_Tool {
                 TFz = mz.Column(0);
                 TFSr = msr.Column(0);
                 TransferFunctionFilenameLabel.Text = shortfname;
+                TFFileFullPath = ofd.FileName;
                 ViewTFButton.Enabled = true;
             } catch (Exception ex) {
                 MessageBox.Show(this, "TF File could not be opened!\n\n" + ex.Message,
@@ -138,8 +141,14 @@ namespace MRI_RF_TF_Tool {
         }
         private void AnalyzeButton_Click(object sender, EventArgs e) {
             int numSkipped = 0;
+            int numValid = 0;
+            List<double> measuredVals = new List<double>();
+            List<double> predictedVals = new List<double>();
             foreach(ETan etanRow in ETanFilesListBox.Items) {
-                if (etanRow.summrow == null) {
+                if (etanRow.summrow == null ||
+                    (VoltageMode && Double.IsNaN(etanRow.summrow.PeakHeaderVoltage)) ||
+                    (!VoltageMode && Double.IsNaN(etanRow.summrow.MeasuredTemperature))
+                    ) {
                     numSkipped++;
                     continue;
                 }
@@ -156,12 +165,43 @@ namespace MRI_RF_TF_Tool {
 
                 if (VoltageMode)
                     Z = Math.Sqrt(Z);
+                if (VoltageMode)
+                    predictedVals.Add(etanRow.summrow.PeakHeaderVoltage);
+                else
+                    predictedVals.Add(etanRow.summrow.MeasuredTemperature);
+                measuredVals.Add(Z);
+                numValid++;
             }
-            if(numSkipped>0) {
-                MessageBox.Show(this, numSkipped.ToString() + " Etan files were skipped " +
-                    "because a cooresponding row in the measurement summary file was not found.",
-                    "Skipped ETan Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            if (numValid == 0) {
+                MessageBox.Show(this, "No valid data was found.",
+                    "No Data",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            if (numSkipped > 0) {
+                    MessageBox.Show(this, numSkipped.ToString() + " Etan files were skipped " +
+                        "because a cooresponding row in the measurement summary file was not found.",
+                        "Skipped ETan Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            double scaleFactor;
+            // FIXME: Are these two things reversed?!
+            var X = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { predictedVals });
+            var Y = CreateVector.DenseOfEnumerable(measuredVals);
+
+            var p = X.QR().Solve(Y);
+            scaleFactor = p[0];
+            
+            TFFitPlotForm tffpf = new TFFitPlotForm();
+            tffpf.AddData(
+                predicted: predictedVals,
+                measured: measuredVals,
+                predictedSlope: scaleFactor,
+                varName: VoltageMode ? "V" : "dT",
+                title: TransferFunctionFilenameLabel.Text
+                );
+            tffpf.Show(this);
+
         }
     }
 }

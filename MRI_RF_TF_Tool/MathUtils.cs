@@ -9,6 +9,9 @@ namespace MRI_RF_TF_Tool
 {
     public static class MathUtils
     {
+        public static IEnumerable<Tuple<TFirst, TSecond>> Zip<TFirst, TSecond>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second) {
+            return first.Zip(second, (a, b) => Tuple.Create(a, b));
+        }
         public static Vector<double> Unwrap(this Vector<double> v)
         {
             var r = v.Clone();

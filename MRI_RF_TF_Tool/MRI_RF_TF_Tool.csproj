@@ -101,6 +101,12 @@
     <Compile Include="TFComparisonForm.Designer.cs">
       <DependentUpon>TFComparisonForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TFFitPlotForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TFFitPlotForm.Designer.cs">
+      <DependentUpon>TFFitPlotForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,6 +127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TFComparisonForm.resx">
       <DependentUpon>TFComparisonForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TFFitPlotForm.resx">
+      <DependentUpon>TFFitPlotForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
