@@ -32,22 +32,23 @@
             this.ProcessTempDataButton = new System.Windows.Forms.Button();
             this.ProcessTempDataGroupBox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.VoltageModeRadioButton = new System.Windows.Forms.RadioButton();
+            this.TemperatureModeRadioButton = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.TempMeasIntervalTextBox = new System.Windows.Forms.TextBox();
             this.TempMeasIntervalLabel = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.NeuroRadioButton = new System.Windows.Forms.RadioButton();
             this.CRMRadioButton = new System.Windows.Forms.RadioButton();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.VoltageModeRadioButton = new System.Windows.Forms.RadioButton();
-            this.TemperatureModeRadioButton = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.DoDataProcessingPlotsCheckBox = new System.Windows.Forms.CheckBox();
             this.ProcessTempDataGroupBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // CompareTFButton
@@ -62,7 +63,7 @@
             // 
             // ProcessTempDataButton
             // 
-            this.ProcessTempDataButton.Location = new System.Drawing.Point(177, 87);
+            this.ProcessTempDataButton.Location = new System.Drawing.Point(177, 110);
             this.ProcessTempDataButton.Name = "ProcessTempDataButton";
             this.ProcessTempDataButton.Size = new System.Drawing.Size(113, 29);
             this.ProcessTempDataButton.TabIndex = 1;
@@ -79,7 +80,7 @@
             this.ProcessTempDataGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 32);
             this.ProcessTempDataGroupBox.Name = "ProcessTempDataGroupBox";
-            this.ProcessTempDataGroupBox.Size = new System.Drawing.Size(525, 138);
+            this.ProcessTempDataGroupBox.Size = new System.Drawing.Size(525, 161);
             this.ProcessTempDataGroupBox.TabIndex = 2;
             this.ProcessTempDataGroupBox.TabStop = false;
             this.ProcessTempDataGroupBox.Text = "Process Data";
@@ -93,21 +94,58 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.ProcessTempDataButton, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.ProcessTempDataButton, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.TempMeasIntervalTextBox, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.TempMeasIntervalLabel, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.DoDataProcessingPlotsCheckBox, 1, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 5;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(519, 119);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(519, 142);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.AutoSize = true;
+            this.flowLayoutPanel2.Controls.Add(this.VoltageModeRadioButton);
+            this.flowLayoutPanel2.Controls.Add(this.TemperatureModeRadioButton);
+            this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(177, 3);
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(339, 23);
+            this.flowLayoutPanel2.TabIndex = 6;
+            // 
+            // VoltageModeRadioButton
+            // 
+            this.VoltageModeRadioButton.AutoSize = true;
+            this.VoltageModeRadioButton.Checked = true;
+            this.VoltageModeRadioButton.Location = new System.Drawing.Point(3, 3);
+            this.VoltageModeRadioButton.Name = "VoltageModeRadioButton";
+            this.VoltageModeRadioButton.Size = new System.Drawing.Size(61, 17);
+            this.VoltageModeRadioButton.TabIndex = 0;
+            this.VoltageModeRadioButton.TabStop = true;
+            this.VoltageModeRadioButton.Text = "Voltage";
+            this.VoltageModeRadioButton.UseVisualStyleBackColor = true;
+            this.VoltageModeRadioButton.CheckedChanged += new System.EventHandler(this.ModeRadioButtonChecked);
+            // 
+            // TemperatureModeRadioButton
+            // 
+            this.TemperatureModeRadioButton.AutoSize = true;
+            this.TemperatureModeRadioButton.Location = new System.Drawing.Point(70, 3);
+            this.TemperatureModeRadioButton.Name = "TemperatureModeRadioButton";
+            this.TemperatureModeRadioButton.Size = new System.Drawing.Size(85, 17);
+            this.TemperatureModeRadioButton.TabIndex = 1;
+            this.TemperatureModeRadioButton.Text = "Temperature";
+            this.TemperatureModeRadioButton.UseVisualStyleBackColor = true;
+            this.TemperatureModeRadioButton.CheckedChanged += new System.EventHandler(this.ModeRadioButtonChecked);
             // 
             // label1
             // 
@@ -168,6 +206,15 @@
             this.CRMRadioButton.Text = "CRM";
             this.CRMRadioButton.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(60, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Data Type:";
+            // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 2;
@@ -185,49 +232,17 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(531, 317);
             this.tableLayoutPanel3.TabIndex = 4;
             // 
-            // flowLayoutPanel2
+            // DoDataProcessingPlotsCheckBox
             // 
-            this.flowLayoutPanel2.AutoSize = true;
-            this.flowLayoutPanel2.Controls.Add(this.VoltageModeRadioButton);
-            this.flowLayoutPanel2.Controls.Add(this.TemperatureModeRadioButton);
-            this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(177, 3);
-            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(339, 23);
-            this.flowLayoutPanel2.TabIndex = 6;
-            // 
-            // VoltageModeRadioButton
-            // 
-            this.VoltageModeRadioButton.AutoSize = true;
-            this.VoltageModeRadioButton.Checked = true;
-            this.VoltageModeRadioButton.Location = new System.Drawing.Point(3, 3);
-            this.VoltageModeRadioButton.Name = "VoltageModeRadioButton";
-            this.VoltageModeRadioButton.Size = new System.Drawing.Size(61, 17);
-            this.VoltageModeRadioButton.TabIndex = 0;
-            this.VoltageModeRadioButton.TabStop = true;
-            this.VoltageModeRadioButton.Text = "Voltage";
-            this.VoltageModeRadioButton.UseVisualStyleBackColor = true;
-            this.VoltageModeRadioButton.CheckedChanged += new System.EventHandler(this.ModeRadioButtonChecked);
-            // 
-            // TemperatureModeRadioButton
-            // 
-            this.TemperatureModeRadioButton.AutoSize = true;
-            this.TemperatureModeRadioButton.Location = new System.Drawing.Point(70, 3);
-            this.TemperatureModeRadioButton.Name = "TemperatureModeRadioButton";
-            this.TemperatureModeRadioButton.Size = new System.Drawing.Size(85, 17);
-            this.TemperatureModeRadioButton.TabIndex = 1;
-            this.TemperatureModeRadioButton.Text = "Temperature";
-            this.TemperatureModeRadioButton.UseVisualStyleBackColor = true;
-            this.TemperatureModeRadioButton.CheckedChanged += new System.EventHandler(this.ModeRadioButtonChecked);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(60, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Data Type:";
+            this.DoDataProcessingPlotsCheckBox.AutoSize = true;
+            this.DoDataProcessingPlotsCheckBox.Checked = true;
+            this.DoDataProcessingPlotsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.DoDataProcessingPlotsCheckBox.Location = new System.Drawing.Point(177, 87);
+            this.DoDataProcessingPlotsCheckBox.Name = "DoDataProcessingPlotsCheckBox";
+            this.DoDataProcessingPlotsCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.DoDataProcessingPlotsCheckBox.TabIndex = 8;
+            this.DoDataProcessingPlotsCheckBox.Text = "Display Data Plots";
+            this.DoDataProcessingPlotsCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -241,12 +256,12 @@
             this.ProcessTempDataGroupBox.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.flowLayoutPanel2.ResumeLayout(false);
+            this.flowLayoutPanel2.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.flowLayoutPanel2.ResumeLayout(false);
-            this.flowLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -268,6 +283,7 @@
         private System.Windows.Forms.RadioButton VoltageModeRadioButton;
         private System.Windows.Forms.RadioButton TemperatureModeRadioButton;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox DoDataProcessingPlotsCheckBox;
     }
 }
 
