@@ -135,7 +135,8 @@ namespace MRI_RF_TF_Tool
         // analysis_range = [stop_elem_ix-10:stop_elem_ix-1]         // This is 10 elements!
         // output_value = mean(analysis_range) - start_val
 
-        public static void ProcessNeuroTempData(string[] infiles, string outfile, double interval)
+        public static void ProcessNeuroTempData(string[] infiles, string outfile, double interval,
+            bool doPlots = true)
         {
             using (StreamWriter tw = new StreamWriter(outfile))
             {
@@ -200,13 +201,15 @@ namespace MRI_RF_TF_Tool
                     tw.WriteLine(
                        String.Join(",", lineparts)
                        );
-
-                    PlotTempSeriesForm ptsf = new PlotTempSeriesForm(
-                        title: namepart, data: values, startvals: startvals,
-                        startx2: start_elem_ix,
-                        endx1: end_elem_ix - 10, endx2: end_elem_ix - 1
-                        );
-                    ptsf.Show();
+                    if (doPlots)
+                    {
+                        PlotTempSeriesForm ptsf = new PlotTempSeriesForm(
+                            title: namepart, data: values, startvals: startvals,
+                            startx2: start_elem_ix,
+                            endx1: end_elem_ix - 10, endx2: end_elem_ix - 1
+                            );
+                        ptsf.Show();
+                    }
                     i++;
                 }
             }
@@ -222,7 +225,8 @@ namespace MRI_RF_TF_Tool
         // analysis_range = [stop_elem_ix-10:stop_elem_ix-1]         // This is 10 elements!
         // output_value = mean(analysis_range) - start_val
 
-        public static void ProcessCRMTempData(string[] infiles, string outfile, double interval)
+        public static void ProcessCRMTempData(string[] infiles, string outfile, double interval,
+            bool doPlots = true)
         {
             using (StreamWriter tw = new StreamWriter(outfile))
             {
@@ -285,13 +289,15 @@ namespace MRI_RF_TF_Tool
                     tw.WriteLine(
                        String.Join(",", lineparts)
                        );
-                    PlotTempSeriesForm ptsf = new PlotTempSeriesForm(
-                        title: namepart, data: values, startvals: startvals,
-                        startx2: start_elem_ix,
-                        endx1: end_elem_ix-10, endx2: end_elem_ix-1
-                        );
-                    ptsf.Show();
-                    i++;
+                    if (doPlots) {
+                        PlotTempSeriesForm ptsf = new PlotTempSeriesForm(
+                            title: namepart, data: values, startvals: startvals,
+                            startx2: start_elem_ix,
+                            endx1: end_elem_ix - 10, endx2: end_elem_ix - 1
+                            );
+                        ptsf.Show();
+                        i++;
+                    }
                 }
             }
         }

@@ -101,10 +101,12 @@ namespace MRI_RF_TF_Tool
                 {
                     if (NeuroRadioButton.Checked)
                     { // Neuro Temp Data
-                        DataProcessing.ProcessNeuroTempData(ofd.FileNames, sfd.FileName,interval);
+                        DataProcessing.ProcessNeuroTempData(ofd.FileNames, sfd.FileName,interval,
+                            doPlots: DoDataProcessingPlotsCheckBox.Checked );
                     } else
                     {
-                        DataProcessing.ProcessCRMTempData(ofd.FileNames, sfd.FileName, interval);
+                        DataProcessing.ProcessCRMTempData(ofd.FileNames, sfd.FileName, interval,
+                            doPlots: DoDataProcessingPlotsCheckBox.Checked);
                     }
                 }
             }
@@ -119,6 +121,7 @@ namespace MRI_RF_TF_Tool
         {
             TempMeasIntervalLabel.Enabled = TemperatureModeRadioButton.Checked;
             TempMeasIntervalTextBox.Enabled = TemperatureModeRadioButton.Checked;
+            DoDataProcessingPlotsCheckBox.Enabled = TemperatureModeRadioButton.Checked;
         }
     }
 }
