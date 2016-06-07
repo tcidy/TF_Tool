@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
-using Excel;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Data.Matlab;
 using System.Windows.Forms;
@@ -18,7 +17,7 @@ namespace MRI_RF_TF_Tool {
 
         Vector<double> TFz= null;
         Vector<Complex> TFSr = null;
-
+        MeasSummary meassum = null;
         public ScaleTFForm() {
             InitializeComponent();
         }
@@ -83,6 +82,7 @@ namespace MRI_RF_TF_Tool {
                     newETanData.RemoveAll(y => y.filename == x.filename);
                 }
                 ETanFilesListBox.Items.AddRange(newETanData.ToArray());
+                RefreshSummaryRows();
             }
             catch (Exception ex) {
                 MessageBox.Show(this, "TF File could not be opened!\n\n" + ex.Message,
@@ -109,18 +109,59 @@ namespace MRI_RF_TF_Tool {
                 MessageBox.Show(this, "No file selected", "TF Reading Error");
                 return;
             }
-            Stream sr = File.OpenRead(ofd.FileName);
-            IExcelDataReader excelReader;
-            // Default to xlsx
-            if (ofd.FileName.EndsWith(".xls")) {
-                excelReader = ExcelReaderFactory.CreateBinaryReader(sr);
-            } else {
-                excelReader = ExcelReaderFactory.CreateOpenXmlReader(sr);
+            MeasSummary sum = new MeasSummary();
+            sum.Read(ofd.FileName);
+            meassum = sum;
+            RefreshSummaryRows();
+            summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
+        }
+        public void RefreshSummaryRows() {
+            if (meassum == null) {
+                foreach (ETan x in ETanFilesListBox.Items) {
+                    x.summrow = null;
+                }
             }
-            var data = excelReader.AsDataSet();
-            var table = data.Tables[0];
-            var headerRow = 
-            excelReader.Close();
+            else {
+                for (int i = 0; i < ETanFilesListBox.Items.Count; i++) {
+                    ETan x = (ETan)ETanFilesListBox.Items[i];
+                    MeasSummary.SummaryRow row =
+                        meassum.rows.Find(r => r.Pathway.ToLowerInvariant() == x.PathWay.ToLowerInvariant());
+                    if (row != x.summrow) {
+                        x.summrow = row;
+                        ETanFilesListBox.Items[i] = x;
+                    }
+                }
+            }
+        }
+        private bool VoltageMode {
+            get { return voltageRadioButton.Checked; }
+        }
+        private void AnalyzeButton_Click(object sender, EventArgs e) {
+            int numSkipped = 0;
+            foreach(ETan etanRow in ETanFilesListBox.Items) {
+                if (etanRow.summrow == null) {
+                    numSkipped++;
+                    continue;
+                }
+                var scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.ETanScalingFactor);
+                if (etanRow.summrow.Conjugate)
+                    scaledEtanRms = scaledEtanRms.Conjugate();
+
+                if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
+                    scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.CrestFactor);
+
+                double Z = DataProcessing.TFInt(
+                    ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
+                    TF_Z: TFz, TF_Sr: TFSr);
+
+                if (VoltageMode)
+                    Z = Math.Sqrt(Z);
+            }
+            if(numSkipped>0) {
+                MessageBox.Show(this, numSkipped.ToString() + " Etan files were skipped " +
+                    "because a cooresponding row in the measurement summary file was not found.",
+                    "Skipped ETan Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

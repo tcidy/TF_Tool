@@ -6,6 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Numerics;
+using MathNet.Numerics;
+using MathNet.Numerics.Interpolation;
+using MathNet.Numerics.Integration;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.Data.Text;
@@ -16,6 +19,56 @@ namespace MRI_RF_TF_Tool
 {
     class DataProcessing
     {
+        // This evaluates the SQUARED intergral of (S*Etan)
+        public static double TFInt(
+            Vector<Double> ETan_Z,
+            Vector<Complex> ETan_RMS,
+            Vector<Double> TF_Z,
+            Vector<Complex> TF_Sr
+            ) {
+
+            int num_points = 5000;
+            double zmin = Math.Max(TF_Z.Minimum(), ETan_Z.Minimum());
+            double zmax = Math.Min(TF_Z.Maximum(), ETan_Z.Maximum());
+            double[] zvals = Generate.LinearSpaced(num_points, zmin, zmax);
+
+            double dz = zvals[1] - zvals[0];
+            LinearSpline etansinterpR = LinearSpline.Interpolate(
+                ETan_Z, ETan_RMS.Real());
+            LinearSpline etansinterpI = LinearSpline.Interpolate(
+                ETan_Z, ETan_RMS.Imaginary());
+            LinearSpline TF_SrInterpR = LinearSpline.Interpolate(
+                TF_Z, TF_Sr.Real());
+            LinearSpline TF_SrInterpI = LinearSpline.Interpolate(
+                TF_Z, TF_Sr.Imaginary());
+
+            /*var ETanGridded = CreateVector.DenseOfEnumerable(
+                zvals.Select(z => new Complex(
+                   etansinterpR.Interpolate(z), etansinterpI.Interpolate(z)))
+                   );
+            var SrGridded = CreateVector.DenseOfEnumerable(
+                zvals.Select(z => new Complex(
+               TF_SrInterpR.Interpolate(z), TF_SrInterpI.Interpolate(z)))
+               );*/
+            //var Z = SrGridded.PointwiseMultiply(ETanGridded);
+            Func<double,Complex> SrEtan = (z) =>
+            {
+                var s = new Complex(
+               TF_SrInterpR.Interpolate(z), TF_SrInterpI.Interpolate(z));
+                var e = new Complex(
+                   etansinterpR.Interpolate(z), etansinterpI.Interpolate(z));
+                return s * e;
+            };
+            Complex sum =
+                new Complex(
+                    NewtonCotesTrapeziumRule.IntegrateComposite(
+                      (z => SrEtan(z).Real), zmin, zmax, num_points),
+                    NewtonCotesTrapeziumRule.IntegrateComposite(
+                      (z => SrEtan(z).Imaginary), zmin, zmax, num_points)
+                      );
+            double dT = sum.MagnitudeSquared();
+            return dT;
+        }
         public static void ProcessNeuroHeaderVoltage(string[] infiles, string outfile)
         {
             using (StreamWriter tw = new StreamWriter(outfile))

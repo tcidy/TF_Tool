@@ -80,7 +80,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="MathUtils.cs" />
-    <Compile Include="MeasSummaryReader.cs" />
+    <Compile Include="MeasSummary.cs" />
     <Compile Include="PlotTempSeriesForm.cs">
       <SubType>Form</SubType>
     </Compile>

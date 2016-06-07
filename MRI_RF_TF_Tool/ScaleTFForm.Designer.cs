@@ -41,6 +41,7 @@
             this.SummaryFileLabel = new System.Windows.Forms.Label();
             this.summaryFilenameLabel = new System.Windows.Forms.Label();
             this.summaryFileBrowseButton = new System.Windows.Forms.Button();
+            this.AnalyzeButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -63,6 +64,7 @@
             this.tableLayoutPanel1.Controls.Add(this.SummaryFileLabel, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.summaryFilenameLabel, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.summaryFileBrowseButton, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.AnalyzeButton, 1, 7);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 9;
@@ -73,7 +75,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(446, 349);
             this.tableLayoutPanel1.TabIndex = 0;
@@ -183,11 +185,12 @@
             // 
             // ETanFilesListBox
             // 
+            this.ETanFilesListBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.ETanFilesListBox.FormattingEnabled = true;
             this.ETanFilesListBox.Location = new System.Drawing.Point(102, 122);
             this.ETanFilesListBox.Name = "ETanFilesListBox";
             this.ETanFilesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.ETanFilesListBox.Size = new System.Drawing.Size(133, 69);
+            this.ETanFilesListBox.Size = new System.Drawing.Size(341, 69);
             this.ETanFilesListBox.TabIndex = 8;
             // 
             // flowLayoutPanel3
@@ -250,6 +253,16 @@
             this.summaryFileBrowseButton.UseVisualStyleBackColor = true;
             this.summaryFileBrowseButton.Click += new System.EventHandler(this.summaryFileBrowseButton_Click);
             // 
+            // AnalyzeButton
+            // 
+            this.AnalyzeButton.Location = new System.Drawing.Point(102, 232);
+            this.AnalyzeButton.Name = "AnalyzeButton";
+            this.AnalyzeButton.Size = new System.Drawing.Size(75, 23);
+            this.AnalyzeButton.TabIndex = 13;
+            this.AnalyzeButton.Text = "Run Analysis....";
+            this.AnalyzeButton.UseVisualStyleBackColor = true;
+            this.AnalyzeButton.Click += new System.EventHandler(this.AnalyzeButton_Click);
+            // 
             // ScaleTFForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -288,5 +301,6 @@
         private System.Windows.Forms.Label SummaryFileLabel;
         private System.Windows.Forms.Label summaryFilenameLabel;
         private System.Windows.Forms.Button summaryFileBrowseButton;
+        private System.Windows.Forms.Button AnalyzeButton;
     }
 }
