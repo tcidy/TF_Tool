@@ -6,12 +6,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.Data.Text;
 using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.Statistics;
 
@@ -29,8 +27,8 @@ namespace MRI_RF_TF_Tool
         private void CompareTFButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            List<Matrix<double>> ZList = new List<Matrix<double>>();
-            List<Matrix<Complex>> SrList = new List<Matrix<Complex>>();
+            List<Vector<double>> ZList = new List<Vector<double>>();
+            List<Vector<Complex>> SrList = new List<Vector<Complex>>();
 
             ofd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Neuro Orion MRI RF Heating TF Files";
             ofd.Multiselect = true;
@@ -45,8 +43,8 @@ namespace MRI_RF_TF_Tool
             {
                 foreach(string f in ofd.FileNames)
                 {
-                    ZList.Add(MatlabReader.Read<double>(f, "z"));
-                    SrList.Add(MatlabReader.Read<Complex>(f, "Sr"));
+                    ZList.Add(MatlabReader.Read<double>(f, "z").Column(0));
+                    SrList.Add(MatlabReader.Read<Complex>(f, "Sr").Column(0));
                 }
             }
             catch (Exception ex)
@@ -122,6 +120,11 @@ namespace MRI_RF_TF_Tool
             TempMeasIntervalLabel.Enabled = TemperatureModeRadioButton.Checked;
             TempMeasIntervalTextBox.Enabled = TemperatureModeRadioButton.Checked;
             DoDataProcessingPlotsCheckBox.Enabled = TemperatureModeRadioButton.Checked;
+        }
+
+        private void ScaleTFButton_Click(object sender, EventArgs e) {
+            ScaleTFForm stff = new ScaleTFForm();
+            stff.ShowDialog();
         }
     }
 }

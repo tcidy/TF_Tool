@@ -18,10 +18,12 @@ namespace MRI_RF_TF_Tool
             {
                 Color.Blue, Color.Green, Color.Red, Color.Black, Color.Purple
             };
-        public TFComparisonForm(IList<string> names, List<Matrix<double>> ZList, List<Matrix<Complex>> SrList)
+        public TFComparisonForm(IList<string> names, IList<Vector<double>> ZList, IList<Vector<Complex>> SrList, string title = null)
         {
             
             InitializeComponent();
+            if (title != null)
+                this.Text = title;
             var MagGP = ZGCMag.GraphPane;
             MagGP.Title.Text = "TF Mag";
             MagGP.XAxis.Title.Text = "Distance from tip electrode (m)";
@@ -36,16 +38,16 @@ namespace MRI_RF_TF_Tool
             {
                 var z = ZList[i];
                 var sr = SrList[i];
-                var srmag = sr.Column(0).Map(c => c.Magnitude);
-                var srphase = sr.Column(0).Map(c => c.Phase);
+                var srmag = sr.Map(c => c.Magnitude);
+                var srphase = sr.Map(c => c.Phase);
                 string shortname = System.IO.Path.GetFileNameWithoutExtension(names[i]);
                 srphase = srphase.Unwrap();
                 PointPairList pplmag = new PointPairList(
-                    z.Column(0).ToArray(),
+                    z.ToArray(),
                     srmag.ToArray()
                     );
                 PointPairList pplphase = new PointPairList(
-                    z.Column(0).ToArray(),
+                    z.ToArray(),
                     srphase.ToArray());
 
                 MagGP.AddCurve(shortname, pplmag, colors[(i % colors.Length)]);
