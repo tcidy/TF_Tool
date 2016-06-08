@@ -28,6 +28,20 @@ namespace MRI_RF_TF_Tool {
                 return s;
             }
         }
+        public static double ConvertColumnToDouble(object x, string colname) {
+            if (x is double) {
+                return (double)x;
+            }
+            else if (x is string) {
+                double value;
+                if (!Double.TryParse((string)x, out value))
+                    throw new FormatException("\"" + colname + "\" column with unknown data: "
+                        + x.ToString());
+                return value;
+            }
+            throw new FormatException("\"" + colname + "\" column with non-numeric data: "
+                + x.ToString());
+        }
         public void Read(string filename) {
             Stream sr = File.OpenRead(filename);
             IExcelDataReader excelReader;
@@ -70,27 +84,26 @@ namespace MRI_RF_TF_Tool {
                 sumrow.Pathway = table.Rows[i].ItemArray[pathway_col].ToString();
                 if (temp_col != -1) {
                     var x = table.Rows[i].ItemArray[temp_col];
-                    if (!(x is double))
-                        throw new FormatException("Temperature column with unknown data: "
-                            + x.ToString());
-                    sumrow.MeasuredTemperature = (double)x;
+                    sumrow.MeasuredTemperature =
+                        ConvertColumnToDouble( x,headerRow.ItemArray[temp_col].ToString());
                 }
                 if (peakHeaderVoltage_col != -1) {
                     var x = table.Rows[i].ItemArray[peakHeaderVoltage_col];
-                    if (!(x is double))
-                        throw new FormatException("Peak Header Voltage column with unknown data: "
-                            + x.ToString());
-                    sumrow.PeakHeaderVoltage = (double)x;
+                    sumrow.PeakHeaderVoltage =
+                         ConvertColumnToDouble(x, headerRow.ItemArray[peakHeaderVoltage_col].ToString());
                 }
                 if (crestFactor_col != -1) {
                     var x = table.Rows[i].ItemArray[crestFactor_col];
-                    if (!(x is double))
-                        throw new FormatException("Crest factor column with unknown data: "
-                            + x.ToString());
-                    sumrow.CrestFactor = (double)x;
+                    sumrow.CrestFactor =
+                         ConvertColumnToDouble(x, headerRow.ItemArray[crestFactor_col].ToString());
                 }
                 if (conj_col != -1) {
-                    switch ((string)(table.Rows[i].ItemArray[conj_col])) {
+                    object x = table.Rows[i].ItemArray[conj_col];
+                    if(!(x is string))
+                        throw new FormatException("Conjugate column with non-string data: "
+                            + x.ToString());
+
+                    switch ((string)(x)) {
                         case "n":
                         case "N":
                         case "":
@@ -106,10 +119,8 @@ namespace MRI_RF_TF_Tool {
                 if (etanScalingFactor_col != -1) {
 
                     var x = table.Rows[i].ItemArray[etanScalingFactor_col];
-                    if (!(x is double))
-                        throw new FormatException("Temperature column with unknown data: "
-                            + x.ToString());
-                    sumrow.ETanScalingFactor = (double)x;
+                    sumrow.ETanScalingFactor =
+                         ConvertColumnToDouble(x, headerRow.ItemArray[etanScalingFactor_col].ToString());
                 }
                 rows.Add(sumrow);
             }

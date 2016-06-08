@@ -49,6 +49,7 @@ namespace MRI_RF_TF_Tool
                TF_SrInterpR.Interpolate(z), TF_SrInterpI.Interpolate(z)))
                );*/
             //var Z = SrGridded.PointwiseMultiply(ETanGridded);
+            // This is the integrand, SR*Etan
             Func<double,Complex> SrEtan = (z) =>
             {
                 var s = new Complex(
@@ -57,6 +58,8 @@ namespace MRI_RF_TF_Tool
                    etansinterpR.Interpolate(z), etansinterpI.Interpolate(z));
                 return s * e;
             };
+            // And to integrate it, the real and imaginary components must be
+            // separately computed.
             Complex sum =
                 new Complex(
                     NewtonCotesTrapeziumRule.IntegrateComposite(
@@ -64,6 +67,8 @@ namespace MRI_RF_TF_Tool
                     NewtonCotesTrapeziumRule.IntegrateComposite(
                       (z => SrEtan(z).Imaginary), zmin, zmax, num_points)
                       );
+            // Usually we need the magnitude squared (for the temperature calculations)
+            // But, the caller may find the square root, if needed, for example for voltages
             double dT = sum.MagnitudeSquared();
             return dT;
         }

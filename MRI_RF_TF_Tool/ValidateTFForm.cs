@@ -128,11 +128,17 @@ namespace MRI_RF_TF_Tool {
                 MessageBox.Show(this, "No file selected", "TF Reading Error");
                 return;
             }
-            MeasSummary sum = new MeasSummary();
-            sum.Read(ofd.FileName);
-            meassum = sum;
-            RefreshSummaryRows();
-            summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
+            try {
+                MeasSummary sum = new MeasSummary();
+                sum.Read(ofd.FileName);
+                meassum = sum;
+                RefreshSummaryRows();
+                summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(this, "Erorr reading summary file.\n\n" +
+                    ex.Message, "Summary file reading error");
+            }
         }
         public void RefreshSummaryRows() {
             if (meassum == null) {

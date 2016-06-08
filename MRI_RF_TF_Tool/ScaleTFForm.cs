@@ -128,11 +128,16 @@ namespace MRI_RF_TF_Tool {
                 MessageBox.Show(this, "No file selected", "TF Reading Error");
                 return;
             }
-            MeasSummary sum = new MeasSummary();
-            sum.Read(ofd.FileName);
-            meassum = sum;
-            RefreshSummaryRows();
-            summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
+            try {
+                MeasSummary sum = new MeasSummary();
+                sum.Read(ofd.FileName);
+                meassum = sum;
+                RefreshSummaryRows();
+                summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
+            } catch (Exception ex) {
+                MessageBox.Show(this, "Erorr reading summary file.\n\n" + 
+                    ex.Message, "Summary file reading error");
+            }
         }
         public void RefreshSummaryRows() {
             if (meassum == null) {
@@ -213,7 +218,7 @@ namespace MRI_RF_TF_Tool {
             // Save things
             SaveScaledTF(scaleFactor);
             if (saveSummaryFileCheckbox.Checked)
-                SaveSummaryTable(ETans, predictedVals);
+                SaveSummaryTable(ETans, predictedVals, scaleFactor);
 
             TFFitPlotForm tffpf = new TFFitPlotForm();
             tffpf.AddData(
@@ -222,17 +227,19 @@ namespace MRI_RF_TF_Tool {
                 varName: VoltageMode ? "V" : "dT",
                 title: TransferFunctionFilenameLabel.Text
                 );
-            tffpf.AddFit(scaleFactor, 0,Color.Red);
+            tffpf.AddFit(1.0/scaleFactor, 0,Color.Red);
             tffpf.Show(this);
         }
         protected void SaveSummaryTable(
             List<ETan> etanRows,
-            List<double> predictedVals
+            List<double> predictedVals,
+            double scaleFactor
             ) {
             string[] headers = new string[] {
                 "", // iterator column
                 "Pathway",
                 "Unscaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
+                "Scaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
                 "Measured " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
                 "Etan Scaling Factor"
             };
@@ -252,6 +259,7 @@ namespace MRI_RF_TF_Tool {
                             i.ToString(),
                             row.Item1.PathWay,
                             row.Item2.ToString(),
+                            (row.Item2/scaleFactor).ToString(),
                             (VoltageMode? row.Item1.summrow.PeakHeaderVoltage : row.Item1.summrow.MeasuredTemperature).ToString(),
                             row.Item1.summrow.ETanScalingFactor.ToString()
                         }));
@@ -276,10 +284,11 @@ namespace MRI_RF_TF_Tool {
                         ws.Cells[i + 2, 2].Value = etanRows[i].PathWay;
 
                         ws.Cells[i + 2, 3].Value = predictedVals[i];
-                        ws.Cells[i + 2, 4].Value = VoltageMode ?
+                        ws.Cells[i + 2, 4].Value = predictedVals[i]/scaleFactor;
+                        ws.Cells[i + 2, 5].Value = VoltageMode ?
                             etanRows[i].summrow.PeakHeaderVoltage :
                             etanRows[i].summrow.MeasuredTemperature;
-                        ws.Cells[i + 2, 5].Value = etanRows[i].summrow.ETanScalingFactor;
+                        ws.Cells[i + 2, 6].Value = etanRows[i].summrow.ETanScalingFactor;
                     }
                     ws.Cells[ws.Dimension.Address].AutoFitColumns();
                     package.SaveAs(newFile);
