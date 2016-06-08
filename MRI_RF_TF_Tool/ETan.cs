@@ -9,7 +9,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Data.Matlab;
 
 namespace MRI_RF_TF_Tool {
-    class ETan {
+    public class ETan {
         public string filename;
         public string name;
         public Vector<double> z;

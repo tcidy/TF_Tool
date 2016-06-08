@@ -142,6 +142,7 @@ namespace MRI_RF_TF_Tool {
         private void AnalyzeButton_Click(object sender, EventArgs e) {
             int numSkipped = 0;
             int numValid = 0;
+            List<ETan> ETans = new List<ETan>();
             List<double> measuredVals = new List<double>();
             List<double> predictedVals = new List<double>();
             foreach(ETan etanRow in ETanFilesListBox.Items) {
@@ -165,11 +166,13 @@ namespace MRI_RF_TF_Tool {
 
                 if (VoltageMode)
                     Z = Math.Sqrt(Z);
+
+                ETans.Add(etanRow);
                 if (VoltageMode)
-                    predictedVals.Add(etanRow.summrow.PeakHeaderVoltage);
+                    measuredVals.Add(etanRow.summrow.PeakHeaderVoltage);
                 else
-                    predictedVals.Add(etanRow.summrow.MeasuredTemperature);
-                measuredVals.Add(Z);
+                    measuredVals.Add(etanRow.summrow.MeasuredTemperature);
+                predictedVals.Add(Z);
                 numValid++;
             }
 
@@ -186,22 +189,77 @@ namespace MRI_RF_TF_Tool {
             }
             double scaleFactor;
             // FIXME: Are these two things reversed?!
-            var X = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { predictedVals });
-            var Y = CreateVector.DenseOfEnumerable(measuredVals);
+            var X = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
+            var Y = CreateVector.DenseOfEnumerable(predictedVals);
 
             var p = X.QR().Solve(Y);
             scaleFactor = p[0];
-            
+            // Save things
+            SaveScaledTF(scaleFactor);
+            if (saveSummaryFileCheckbox.Checked)
+                SaveSummaryTable(ETans, predictedVals);
+
             TFFitPlotForm tffpf = new TFFitPlotForm();
             tffpf.AddData(
                 predicted: predictedVals,
                 measured: measuredVals,
-                predictedSlope: scaleFactor,
+                fitFactor: scaleFactor,
                 varName: VoltageMode ? "V" : "dT",
                 title: TransferFunctionFilenameLabel.Text
                 );
             tffpf.Show(this);
+        }
+        protected void SaveSummaryTable(
+            List<ETan> etanRows,
+            List<double> predictedVals
+            ) {
+            string[] headers = new string[] {
+                "", // iterator column
+                "Pathway",
+                "Unscaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
+                "Measured " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
+                "Etan Scaling Factor"
+            };
+            SaveFileDialog sfd = new SaveFileDialog();
+            //sfd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Raw Neuro Header Voltage Data Files";
+            sfd.Filter = "CSV (*.csv)|*.csv|All Files (*.*)|*.*";
+            sfd.Title = "Select output scaling calculation summaryfile...";
+            if (sfd.ShowDialog() != DialogResult.OK) {
+                return;
+            }
+            using (var sw = new StreamWriter(sfd.OpenFile())) {
+                int i = 0;
+                sw.WriteLineAsync(String.Join(",", headers));
+                foreach(var row in etanRows.Zip(predictedVals)) {
+                    sw.WriteLineAsync(String.Join(",", new string[] {
+                        i.ToString(),
+                        row.Item1.PathWay,
+                        row.Item2.ToString(),
+                        (VoltageMode? row.Item1.summrow.PeakHeaderVoltage : row.Item1.summrow.MeasuredTemperature).ToString(),
+                        row.Item1.summrow.ETanScalingFactor.ToString()
+                    }));
+                    i++;
+                }
+            }
+        }
 
+        protected void SaveScaledTF(double scaleFactor) {
+            var TFSrScaled = TFSr.Divide(scaleFactor);
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            //sfd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Raw Neuro Header Voltage Data Files";
+            sfd.Filter = "MAT (*.mat)|*.mat|All Files (*.*)|*.*";
+            sfd.Title = "Select output scaled Etan file...";
+            if (sfd.ShowDialog() != DialogResult.OK) {
+                return;
+            }
+            var Z = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { TFz });
+            var Sr = CreateMatrix.DenseOfColumnVectors(new Vector<Complex>[] { TFSrScaled });
+
+            var matrices = new List<MatlabMatrix>();
+            matrices.Add(MatlabWriter.Pack(Z, "z"));
+            matrices.Add(MatlabWriter.Pack(Sr, "Sr"));
+            MatlabWriter.Store(sfd.FileName, matrices);
         }
     }
 }
