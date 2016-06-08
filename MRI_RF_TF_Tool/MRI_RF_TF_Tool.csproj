@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.0.5\lib\net20\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
       <Private>True</Private>
@@ -89,6 +93,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidateTFForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ValidateTFForm.Designer.cs">
+      <DependentUpon>ValidateTFForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ScaleTFForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +132,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ValidateTFForm.resx">
+      <DependentUpon>ValidateTFForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ScaleTFForm.resx">
       <DependentUpon>ScaleTFForm.cs</DependentUpon>
     </EmbeddedResource>

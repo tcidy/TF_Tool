@@ -11,17 +11,17 @@ using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearRegression;
 using MathNet.Numerics.Data.Matlab;
-using OfficeOpenXml;
 using System.Windows.Forms;
+using OfficeOpenXml;
 
 namespace MRI_RF_TF_Tool {
-    public partial class ScaleTFForm : Form {
+    public partial class ValidateTFForm : Form {
 
         Vector<double> TFz= null;
         Vector<Complex> TFSr = null;
         MeasSummary meassum = null;
         string TFFileFullPath = null;
-        public ScaleTFForm() {
+        public ValidateTFForm() {
             InitializeComponent();
         }
 
@@ -55,7 +55,7 @@ namespace MRI_RF_TF_Tool {
                     TFSr = msr.Row(0);
                 else
                     throw new FormatException("Input matrix must be 1xN or Nx1, with N>=2");
-                if (TFz.Count != TFSr.Count)
+                if(TFz.Count != TFSr.Count)
                     throw new FormatException("Input matrices must be of equal dimensions");
 
                 TransferFunctionFilenameLabel.Text = shortfname;
@@ -155,12 +155,34 @@ namespace MRI_RF_TF_Tool {
         private bool VoltageMode {
             get { return voltageRadioButton.Checked; }
         }
-        private void AnalyzeButton_Click(object sender, EventArgs e) {
+        public bool IsWithinUncertainty(
+            double uncFactor,
+            double uncOffset,
+            double measured,
+            double predicted
+            ) {
+            double lowerBound = predicted * (1.0 - uncFactor) - uncOffset;
+            double upperBound = predicted * (1.0 + uncFactor) + uncOffset;
+            return (measured > lowerBound) && (measured < upperBound);
+        }
+        private void ValidateButton_Click(object sender, EventArgs e) {
             int numSkipped = 0;
             int numValid = 0;
             List<ETan> ETans = new List<ETan>();
             List<double> measuredVals = new List<double>();
             List<double> predictedVals = new List<double>();
+            List<bool> validVals = new List<bool>();
+
+            double uncFactor, uncOffset;
+            if(!Double.TryParse(pcentUncTextBox.Text,out uncFactor) ||
+                !Double.TryParse(uncOffsetTextBox.Text,out uncOffset)) {
+                MessageBox.Show(this, "Uncertainty must be a valid number.",
+                    "Invalid input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            uncFactor = uncFactor / 100.0; // Convert from percentage
+
             foreach(ETan etanRow in ETanFilesListBox.Items) {
                 if (etanRow.summrow == null ||
                     (VoltageMode && Double.IsNaN(etanRow.summrow.PeakHeaderVoltage)) ||
@@ -184,11 +206,19 @@ namespace MRI_RF_TF_Tool {
                     Z = Math.Sqrt(Z);
 
                 ETans.Add(etanRow);
+                double measuredVal;
                 if (VoltageMode)
-                    measuredVals.Add(etanRow.summrow.PeakHeaderVoltage);
+                    measuredVal = etanRow.summrow.PeakHeaderVoltage;
                 else
-                    measuredVals.Add(etanRow.summrow.MeasuredTemperature);
+                    measuredVal = etanRow.summrow.MeasuredTemperature;
+                measuredVals.Add(measuredVal);
                 predictedVals.Add(Z);
+                validVals.Add(IsWithinUncertainty(
+                    uncFactor: uncFactor,
+                    uncOffset: uncOffset,
+                    measured: measuredVal,
+                    predicted: Z
+                    ));
                 numValid++;
             }
 
@@ -203,38 +233,36 @@ namespace MRI_RF_TF_Tool {
                         "because a cooresponding row in the measurement summary file was not found.",
                         "Skipped ETan Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            double scaleFactor;
-            // FIXME: Are these two things reversed?!
-            var X = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
-            var Y = CreateVector.DenseOfEnumerable(predictedVals);
 
-            var p = X.QR().Solve(Y);
-            scaleFactor = p[0];
             // Save things
-            SaveScaledTF(scaleFactor);
             if (saveSummaryFileCheckbox.Checked)
-                SaveSummaryTable(ETans, predictedVals);
-
+                SaveSummaryTable(ETans, predictedVals,validVals);
+            bool overallValid = !validVals.Contains(false);
             TFFitPlotForm tffpf = new TFFitPlotForm();
             tffpf.AddData(
                 predicted: predictedVals,
                 measured: measuredVals,
                 varName: VoltageMode ? "V" : "dT",
-                title: TransferFunctionFilenameLabel.Text
+                title: TransferFunctionFilenameLabel.Text + ": " +
+                (overallValid? "VALID" : "NOT VALID")
                 );
-            tffpf.AddFit(scaleFactor, 0,Color.Red);
+            tffpf.AddFit(1 + uncFactor, uncOffset, overallValid? Color.Blue: Color.Red);
+            tffpf.AddFit(1 - uncFactor, -uncOffset, overallValid ? Color.Blue : Color.Red);
+
             tffpf.Show(this);
         }
         protected void SaveSummaryTable(
             List<ETan> etanRows,
-            List<double> predictedVals
+            List<double> predictedVals,
+            List<bool> validVals
             ) {
             string[] headers = new string[] {
                 "", // iterator column
                 "Pathway",
-                "Unscaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
+                "TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
                 "Measured " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
-                "Etan Scaling Factor"
+                "Etan Scaling Factor",
+                "Validation"
             };
             SaveFileDialog sfd = new SaveFileDialog();
             //sfd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Raw Neuro Header Voltage Data Files";
@@ -243,24 +271,27 @@ namespace MRI_RF_TF_Tool {
             if (sfd.ShowDialog() != DialogResult.OK) {
                 return;
             }
-            if (sfd.FileName.EndsWith(".csv")) {
+            if(sfd.FileName.EndsWith(".csv")) {
                 using (var sw = new StreamWriter(sfd.OpenFile())) {
                     int i = 0;
                     sw.WriteLineAsync(String.Join(",", headers));
-                    foreach (var row in etanRows.Zip(predictedVals)) {
+                    foreach (var row in etanRows.Zip(predictedVals).Zip(validVals)) {
                         sw.WriteLineAsync(String.Join(",", new string[] {
-                            i.ToString(),
-                            row.Item1.PathWay,
-                            row.Item2.ToString(),
-                            (VoltageMode? row.Item1.summrow.PeakHeaderVoltage : row.Item1.summrow.MeasuredTemperature).ToString(),
-                            row.Item1.summrow.ETanScalingFactor.ToString()
+                            i.ToString(), // iterator
+                            row.Item1.Item1.PathWay, // pathway
+                            row.Item1.Item2.ToString(), // predicted voltage
+                            (VoltageMode?
+                            row.Item1.Item1.summrow.PeakHeaderVoltage :
+                            row.Item1.Item1.summrow.MeasuredTemperature).ToString(),
+                            row.Item1.Item1.summrow.ETanScalingFactor.ToString(),
+                            row.Item2 ? "Yes" : "No"
                         }));
                         i++;
                     }
                 }
             } else {
                 FileInfo newFile = new FileInfo(sfd.FileName);
-                if (newFile.Exists) {
+                if(newFile.Exists) {
                     newFile.Delete();
                     newFile = new FileInfo(sfd.FileName);
                 }
@@ -270,7 +301,7 @@ namespace MRI_RF_TF_Tool {
                         ws.Cells[1, i + 1].Value = headers[i];
                         ws.Cells[1, i + 1].Style.Font.Bold = true;
                     }
-                    for (int i = 0; i < etanRows.Count; i++) {
+                    for(int i=0; i<etanRows.Count; i++) {
                         ws.Cells[i + 2, 1].Value = i; // iterator
                         ws.Cells[i + 2, 1].Style.Font.Bold = true;
                         ws.Cells[i + 2, 2].Value = etanRows[i].PathWay;
@@ -280,30 +311,14 @@ namespace MRI_RF_TF_Tool {
                             etanRows[i].summrow.PeakHeaderVoltage :
                             etanRows[i].summrow.MeasuredTemperature;
                         ws.Cells[i + 2, 5].Value = etanRows[i].summrow.ETanScalingFactor;
+                        ws.Cells[i + 2, 6].Value = validVals[i] ? "Yes" : "No";
                     }
                     ws.Cells[ws.Dimension.Address].AutoFitColumns();
                     package.SaveAs(newFile);
                 }
+
             }
         }
-
-        protected void SaveScaledTF(double scaleFactor) {
-            var TFSrScaled = TFSr.Divide(scaleFactor);
-
-            SaveFileDialog sfd = new SaveFileDialog();
-            //sfd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Raw Neuro Header Voltage Data Files";
-            sfd.Filter = "MAT (*.mat)|*.mat|All Files (*.*)|*.*";
-            sfd.Title = "Select output scaled Etan file...";
-            if (sfd.ShowDialog() != DialogResult.OK) {
-                return;
-            }
-            var Z = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { TFz });
-            var Sr = CreateMatrix.DenseOfColumnVectors(new Vector<Complex>[] { TFSrScaled });
-
-            var matrices = new List<MatlabMatrix>();
-            matrices.Add(MatlabWriter.Pack(Z, "z"));
-            matrices.Add(MatlabWriter.Pack(Sr, "Sr"));
-            MatlabWriter.Store(sfd.FileName, matrices);
-        }
+        
     }
 }

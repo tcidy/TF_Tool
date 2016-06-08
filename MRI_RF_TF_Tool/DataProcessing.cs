@@ -30,9 +30,7 @@ namespace MRI_RF_TF_Tool
             int num_points = 5000;
             double zmin = Math.Max(TF_Z.Minimum(), ETan_Z.Minimum());
             double zmax = Math.Min(TF_Z.Maximum(), ETan_Z.Maximum());
-            double[] zvals = Generate.LinearSpaced(num_points, zmin, zmax);
 
-            double dz = zvals[1] - zvals[0];
             LinearSpline etansinterpR = LinearSpline.Interpolate(
                 ETan_Z, ETan_RMS.Real());
             LinearSpline etansinterpI = LinearSpline.Interpolate(

@@ -17,22 +17,26 @@ namespace MRI_RF_TF_Tool {
         public void AddData(
             IList<double> predicted,
             IList<double> measured,
-            double fitFactor = Double.NaN,
             string varName = "",
             string title = "Predicted vs Measured"
         ) {
             var gp = fitPlotGraphControl.GraphPane;
             var dataPoints = gp.AddCurve("",
-                measured.ToArray(), predicted.ToArray(), Color.Black,SymbolType.Circle);
+                predicted.ToArray(), measured.ToArray(), Color.Black,SymbolType.Circle);
             dataPoints.Line.IsVisible = false;
             gp.Title.Text = title;
-            gp.XAxis.Title.Text = "Measured " + varName;
-            gp.YAxis.Title.Text = "Predicted " + varName;
-
+            gp.XAxis.Title.Text = "Predicted " + varName;
+            gp.YAxis.Title.Text = "Measured " + varName;
+            gp.AxisChange();
+        }
+        public void AddFit(double m, double b, Color color) {
+            var gp = fitPlotGraphControl.GraphPane;
+            var xmin = gp.XAxis.Scale.Min;
+            var xmax = gp.XAxis.Scale.Max;
             gp.AddCurve("",
-                new double[] { 0, measured.Max() },
-                new double[] { 0, fitFactor * measured.Max() },
-                Color.Red, SymbolType.None);
+                new double[] { xmin,  xmax},
+                new double[] { m * xmin + b, m*xmax+b },
+                color, SymbolType.None);
             gp.AxisChange();
         }
     }

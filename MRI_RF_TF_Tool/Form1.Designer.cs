@@ -42,9 +42,10 @@
             this.NeuroRadioButton = new System.Windows.Forms.RadioButton();
             this.CRMRadioButton = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.DoDataProcessingPlotsCheckBox = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.ScaleTFButton = new System.Windows.Forms.Button();
+            this.validateButton = new System.Windows.Forms.Button();
             this.ProcessTempDataGroupBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -54,7 +55,7 @@
             // 
             // CompareTFButton
             // 
-            this.CompareTFButton.Location = new System.Drawing.Point(3, 32);
+            this.CompareTFButton.Location = new System.Drawing.Point(3, 61);
             this.CompareTFButton.Name = "CompareTFButton";
             this.CompareTFButton.Size = new System.Drawing.Size(93, 23);
             this.CompareTFButton.TabIndex = 0;
@@ -79,7 +80,7 @@
             this.tableLayoutPanel3.SetColumnSpan(this.ProcessTempDataGroupBox, 2);
             this.ProcessTempDataGroupBox.Controls.Add(this.tableLayoutPanel1);
             this.ProcessTempDataGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 61);
+            this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 90);
             this.ProcessTempDataGroupBox.Name = "ProcessTempDataGroupBox";
             this.ProcessTempDataGroupBox.Size = new System.Drawing.Size(525, 161);
             this.ProcessTempDataGroupBox.TabIndex = 2;
@@ -130,17 +131,17 @@
             this.VoltageModeRadioButton.Checked = true;
             this.VoltageModeRadioButton.Location = new System.Drawing.Point(3, 3);
             this.VoltageModeRadioButton.Name = "VoltageModeRadioButton";
-            this.VoltageModeRadioButton.Size = new System.Drawing.Size(61, 17);
+            this.VoltageModeRadioButton.Size = new System.Drawing.Size(99, 17);
             this.VoltageModeRadioButton.TabIndex = 0;
             this.VoltageModeRadioButton.TabStop = true;
-            this.VoltageModeRadioButton.Text = "Voltage";
+            this.VoltageModeRadioButton.Text = "Header Voltage";
             this.VoltageModeRadioButton.UseVisualStyleBackColor = true;
             this.VoltageModeRadioButton.CheckedChanged += new System.EventHandler(this.ModeRadioButtonChecked);
             // 
             // TemperatureModeRadioButton
             // 
             this.TemperatureModeRadioButton.AutoSize = true;
-            this.TemperatureModeRadioButton.Location = new System.Drawing.Point(70, 3);
+            this.TemperatureModeRadioButton.Location = new System.Drawing.Point(108, 3);
             this.TemperatureModeRadioButton.Name = "TemperatureModeRadioButton";
             this.TemperatureModeRadioButton.Size = new System.Drawing.Size(85, 17);
             this.TemperatureModeRadioButton.TabIndex = 1;
@@ -216,25 +217,6 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Data Type:";
             // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.Controls.Add(this.ProcessTempDataGroupBox, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.CompareTFButton, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.ScaleTFButton, 0, 0);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 4;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(531, 317);
-            this.tableLayoutPanel3.TabIndex = 4;
-            // 
             // DoDataProcessingPlotsCheckBox
             // 
             this.DoDataProcessingPlotsCheckBox.AutoSize = true;
@@ -247,6 +229,27 @@
             this.DoDataProcessingPlotsCheckBox.Text = "Display Data Plots";
             this.DoDataProcessingPlotsCheckBox.UseVisualStyleBackColor = true;
             // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.Controls.Add(this.ProcessTempDataGroupBox, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.CompareTFButton, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.ScaleTFButton, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.validateButton, 0, 1);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 5;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(531, 317);
+            this.tableLayoutPanel3.TabIndex = 4;
+            // 
             // ScaleTFButton
             // 
             this.ScaleTFButton.Location = new System.Drawing.Point(3, 3);
@@ -256,6 +259,16 @@
             this.ScaleTFButton.Text = "Scale TFs";
             this.ScaleTFButton.UseVisualStyleBackColor = true;
             this.ScaleTFButton.Click += new System.EventHandler(this.ScaleTFButton_Click);
+            // 
+            // validateButton
+            // 
+            this.validateButton.Location = new System.Drawing.Point(3, 32);
+            this.validateButton.Name = "validateButton";
+            this.validateButton.Size = new System.Drawing.Size(93, 23);
+            this.validateButton.TabIndex = 4;
+            this.validateButton.Text = "Validate TFs";
+            this.validateButton.UseVisualStyleBackColor = true;
+            this.validateButton.Click += new System.EventHandler(this.validateButton_Click);
             // 
             // Form1
             // 
@@ -298,6 +311,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox DoDataProcessingPlotsCheckBox;
         private System.Windows.Forms.Button ScaleTFButton;
+        private System.Windows.Forms.Button validateButton;
     }
 }
 

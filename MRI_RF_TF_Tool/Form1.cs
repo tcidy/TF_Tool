@@ -126,5 +126,10 @@ namespace MRI_RF_TF_Tool
             ScaleTFForm stff = new ScaleTFForm();
             stff.ShowDialog();
         }
+
+        private void validateButton_Click(object sender, EventArgs e) {
+            ValidateTFForm vtff = new ValidateTFForm();
+            vtff.ShowDialog();
+        }
     }
 }
