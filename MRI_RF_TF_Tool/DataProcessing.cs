@@ -172,10 +172,8 @@ namespace MRI_RF_TF_Tool
         }
 
         // FIXME: Why is data so cyclical??
-        // FIXME: The time interval in the GUI seems unused?
         // FIXME: The 0.2 constant threshold for RF on seems perhaps too low
         // FIXME: Assumption that the sample rate is exactly 1 Hz
-        // FIXME: Perhaps the python code averaged 11 elements instead of 10.
         // 
         // Neuro Temp Data Processing:
         // Look for the time series of data, Starting after a line that starts with 'Scan,'

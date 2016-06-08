@@ -194,10 +194,11 @@ namespace MRI_RF_TF_Tool {
                 var scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.ETanScalingFactor);
                 if (etanRow.summrow.Conjugate)
                     scaledEtanRms = scaledEtanRms.Conjugate();
-
+                // FIXME: Should this use the crest factor?
+                /*
                 if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
                     scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.CrestFactor);
-
+                */
                 double Z = DataProcessing.TFInt(
                     ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
                     TF_Z: TFz, TF_Sr: TFSr);

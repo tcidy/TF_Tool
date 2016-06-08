@@ -204,12 +204,12 @@ namespace MRI_RF_TF_Tool {
                         "Skipped ETan Files", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             double scaleFactor;
-            // FIXME: Are these two things reversed?!
-            var X = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
-            var Y = CreateVector.DenseOfEnumerable(predictedVals);
+            // TODO: Are these two things reversed? I need another person to double-check.
+            var A = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
+            var B = CreateVector.DenseOfEnumerable(predictedVals);
 
-            var p = X.QR().Solve(Y);
-            scaleFactor = p[0];
+            var X = A.QR().Solve(B); // A*X = B
+            scaleFactor = X[0];
             // Save things
             SaveScaledTF(scaleFactor);
             if (saveSummaryFileCheckbox.Checked)
