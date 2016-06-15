@@ -236,12 +236,15 @@ namespace MRI_RF_TF_Tool
                     var startvals = values.Select(
                         v => v.GetRange(0, 30).Mean()
                       ).ToArray();
-                    int start_elem_ix = values[0].FindIndex(x => x > startvals[0] + 0.2);
-                    if (start_elem_ix < 20 || start_elem_ix == -1)
+
+                    int start_elem_ix = values[0].Skip(30).ToList().FindIndex(x => x > startvals[0] + 0.2) + 30; // Ignore the first 30 elements
+                    if (start_elem_ix == -1)
                         throw new FormatException("Start element was found to be invalid, ix=" +
                             start_elem_ix.ToString() + ", in file " +
                             fn);
                     int end_elem_ix = start_elem_ix + ((int)interval);
+                    if(end_elem_ix >= values[0].Count)
+                        throw new FormatException("In file " + fn + ", the RF pulse start + interval position was past the end of the data");
                     var endvals = values.Select(
                         v => v.GetRange(end_elem_ix - 10, 10).Mean()
                       ).ToArray();

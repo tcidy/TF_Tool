@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="MathUtils.cs" />
     <Compile Include="MeasSummary.cs" />
+    <Compile Include="NaturalSortComparator.cs" />
     <Compile Include="PlotTempSeriesForm.cs">
       <SubType>Form</SubType>
     </Compile>

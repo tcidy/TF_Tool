@@ -178,6 +178,7 @@ namespace MRI_RF_TF_Tool {
             List<double> measuredVals = new List<double>();
             List<double> predictedVals = new List<double>();
             List<bool> validVals = new List<bool>();
+            List<string> pathwayVals = new List<string>();
 
             double uncFactor, uncOffset;
             if(!Double.TryParse(pcentUncTextBox.Text,out uncFactor) ||
@@ -201,10 +202,10 @@ namespace MRI_RF_TF_Tool {
                 if (etanRow.summrow.Conjugate)
                     scaledEtanRms = scaledEtanRms.Conjugate();
                 // FIXME: Should this use the crest factor?
-                /*
+                
                 if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
                     scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.CrestFactor);
-                */
+                
                 double Z = DataProcessing.TFInt(
                     ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
                     TF_Z: TFz, TF_Sr: TFSr);
@@ -220,6 +221,7 @@ namespace MRI_RF_TF_Tool {
                     measuredVal = etanRow.summrow.MeasuredTemperature;
                 measuredVals.Add(measuredVal);
                 predictedVals.Add(Z);
+                pathwayVals.Add(etanRow.PathWay);
                 validVals.Add(IsWithinUncertainty(
                     uncFactor: uncFactor,
                     uncOffset: uncOffset,
@@ -257,6 +259,24 @@ namespace MRI_RF_TF_Tool {
             tffpf.AddFit(1 - uncFactor, -uncOffset, overallValid ? Color.Blue : Color.Red);
 
             tffpf.Show(this);
+
+            // Series plot
+            //     First sort data
+            var pairs = predictedVals.Zip(measuredVals);
+            var pathwayList = pathwayVals.Zip(pairs);
+            pathwayList = pathwayList.OrderBy(x => x.Item1, new NaturalSortComparer<string>());
+            //     And then plot
+            tffpf = new TFFitPlotForm();
+            tffpf.ConfigurePathwaySeries(TransferFunctionFilenameLabel.Text,
+                xaxisLabel: "Pathway",
+                yaxisLabel: VoltageMode ? "V" : "dT",
+                xaxisText: pathwayList.Select(x => x.Item1).ToArray()
+                );
+            tffpf.AddPathwaySeries(
+                "Predicted", pathwayList.Select(x => x.Item2.Item1).ToArray(), Color.Black);
+            tffpf.AddPathwaySeries(
+                            "Measured", pathwayList.Select(x => x.Item2.Item2).ToArray(), Color.Red);
+            tffpf.Show();
         }
         protected void SaveSummaryTable(
             List<ETan> etanRows,

@@ -39,5 +39,22 @@ namespace MRI_RF_TF_Tool {
                 color, SymbolType.None);
             gp.AxisChange();
         }
+        public void ConfigurePathwaySeries(string title, string xaxisLabel, string yaxisLabel,
+            string[] xaxisText) {
+            var gp = fitPlotGraphControl.GraphPane;
+            this.Text = title;
+            gp.Title.Text = title;
+            gp.XAxis.Title.Text = xaxisLabel;
+            gp.YAxis.Title.Text = yaxisLabel;
+            gp.XAxis.MajorTic.IsBetweenLabels = true;
+            gp.XAxis.Scale.TextLabels = xaxisText;
+            gp.XAxis.Type = AxisType.Text;
+        }
+        public void AddPathwaySeries(string name, double[] data, Color color) {
+            var gp = fitPlotGraphControl.GraphPane;
+            BarItem bar = gp.AddBar(name, null, data, color);
+            //bar.Bar.Fill = new Fill(color);
+            gp.AxisChange();
+        }
     }
 }
