@@ -11,8 +11,8 @@ using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearRegression;
 using MathNet.Numerics.Data.Matlab;
-using OfficeOpenXml;
 using System.Windows.Forms;
+using OfficeOpenXml;
 
 namespace MRI_RF_TF_Tool {
     public partial class ScaleTFForm : Form {
@@ -179,7 +179,7 @@ namespace MRI_RF_TF_Tool {
                     scaledEtanRms = scaledEtanRms.Conjugate();
 
                 if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
-                    scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.CrestFactor);
+                    scaledEtanRms = scaledEtanRms.Multiply(etanRow.summrow.CrestFactor);
 
                 double Z = DataProcessing.TFInt(
                     ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
@@ -189,10 +189,12 @@ namespace MRI_RF_TF_Tool {
                     Z = Math.Sqrt(Z);
 
                 ETans.Add(etanRow);
+                double measuredVal;
                 if (VoltageMode)
-                    measuredVals.Add(etanRow.summrow.PeakHeaderVoltage);
+                    measuredVal = etanRow.summrow.PeakHeaderVoltage;
                 else
-                    measuredVals.Add(etanRow.summrow.MeasuredTemperature);
+                    measuredVal = etanRow.summrow.MeasuredTemperature;
+                measuredVals.Add(measuredVal);
                 predictedVals.Add(Z);
                 numValid++;
             }
@@ -215,8 +217,9 @@ namespace MRI_RF_TF_Tool {
 
             var X = A.QR().Solve(B); // A*X = B
             scaleFactor = X[0];
+            double TFScaleFactor = VoltageMode ? scaleFactor : Math.Sqrt(scaleFactor); // Scalefactor used for scaling the TF
             // Save things
-            SaveScaledTF(scaleFactor);
+            SaveScaledTF(TFScaleFactor);
             if (saveSummaryFileCheckbox.Checked)
                 SaveSummaryTable(ETans, predictedVals, scaleFactor);
 

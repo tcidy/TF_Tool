@@ -134,8 +134,7 @@ namespace MRI_RF_TF_Tool {
                 meassum = sum;
                 RefreshSummaryRows();
                 summaryFilenameLabel.Text = Path.GetFileName(ofd.FileName);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 MessageBox.Show(this, "Erorr reading summary file.\n\n" +
                     ex.Message, "Summary file reading error");
             }
@@ -204,7 +203,7 @@ namespace MRI_RF_TF_Tool {
                 // FIXME: Should this use the crest factor?
                 
                 if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
-                    scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.CrestFactor);
+                    scaledEtanRms = scaledEtanRms.Multiply(etanRow.summrow.CrestFactor);
                 
                 double Z = DataProcessing.TFInt(
                     ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
