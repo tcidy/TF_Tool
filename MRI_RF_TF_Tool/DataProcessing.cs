@@ -176,7 +176,7 @@ namespace MRI_RF_TF_Tool
             }
         }
 
-        // FIXME: Why is data so cyclical??
+      
         // FIXME: The 0.2 constant threshold for RF on seems perhaps too low
         // FIXME: Assumption that the sample rate is exactly 1 Hz
         // 
