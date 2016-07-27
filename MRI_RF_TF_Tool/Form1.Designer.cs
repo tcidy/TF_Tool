@@ -277,7 +277,7 @@
             this.ClientSize = new System.Drawing.Size(531, 317);
             this.Controls.Add(this.tableLayoutPanel3);
             this.Name = "Form1";
-            this.Text = "TF Processing Utility";
+            this.Text = "TF Processing Utility Version 2016-July-26";
             this.ProcessTempDataGroupBox.ResumeLayout(false);
             this.ProcessTempDataGroupBox.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
