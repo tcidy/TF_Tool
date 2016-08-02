@@ -55,6 +55,9 @@
             this.ExtrapolateErrorLabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.InterpolationModeComboBox = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.extrapolationPointsTextBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -74,7 +77,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(703, 77);
+            this.groupBox1.Size = new System.Drawing.Size(680, 77);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "TF Selection";
@@ -97,9 +100,9 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(697, 58);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(674, 58);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // BackgroundTFFilenameLabel
@@ -177,10 +180,10 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(709, 525);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(686, 473);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // VisualizationGroupbox
@@ -191,7 +194,7 @@
             this.VisualizationGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.VisualizationGroupbox.Location = new System.Drawing.Point(3, 86);
             this.VisualizationGroupbox.Name = "VisualizationGroupbox";
-            this.VisualizationGroupbox.Size = new System.Drawing.Size(703, 294);
+            this.VisualizationGroupbox.Size = new System.Drawing.Size(680, 242);
             this.VisualizationGroupbox.TabIndex = 1;
             this.VisualizationGroupbox.TabStop = false;
             this.VisualizationGroupbox.Text = "Visualization";
@@ -210,7 +213,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(697, 275);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(674, 223);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // MagGraphControl
@@ -227,7 +230,7 @@
             this.MagGraphControl.ScrollMinX = 0D;
             this.MagGraphControl.ScrollMinY = 0D;
             this.MagGraphControl.ScrollMinY2 = 0D;
-            this.MagGraphControl.Size = new System.Drawing.Size(691, 131);
+            this.MagGraphControl.Size = new System.Drawing.Size(668, 105);
             this.MagGraphControl.TabIndex = 0;
             this.MagGraphControl.UseExtendedPrintDialog = true;
             // 
@@ -236,7 +239,7 @@
             this.phaseGraphControl.AutoSize = true;
             this.phaseGraphControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.phaseGraphControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.phaseGraphControl.Location = new System.Drawing.Point(3, 140);
+            this.phaseGraphControl.Location = new System.Drawing.Point(3, 114);
             this.phaseGraphControl.Name = "phaseGraphControl";
             this.phaseGraphControl.ScrollGrace = 0D;
             this.phaseGraphControl.ScrollMaxX = 0D;
@@ -245,7 +248,7 @@
             this.phaseGraphControl.ScrollMinX = 0D;
             this.phaseGraphControl.ScrollMinY = 0D;
             this.phaseGraphControl.ScrollMinY2 = 0D;
-            this.phaseGraphControl.Size = new System.Drawing.Size(691, 132);
+            this.phaseGraphControl.Size = new System.Drawing.Size(668, 106);
             this.phaseGraphControl.TabIndex = 1;
             this.phaseGraphControl.UseExtendedPrintDialog = true;
             // 
@@ -255,9 +258,9 @@
             this.FilterGroupbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.FilterGroupbox.Controls.Add(this.tableLayoutPanel4);
             this.FilterGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FilterGroupbox.Location = new System.Drawing.Point(3, 386);
+            this.FilterGroupbox.Location = new System.Drawing.Point(3, 334);
             this.FilterGroupbox.Name = "FilterGroupbox";
-            this.FilterGroupbox.Size = new System.Drawing.Size(703, 107);
+            this.FilterGroupbox.Size = new System.Drawing.Size(680, 107);
             this.FilterGroupbox.TabIndex = 2;
             this.FilterGroupbox.TabStop = false;
             this.FilterGroupbox.Text = "Filter";
@@ -278,7 +281,7 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(697, 88);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(674, 88);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // flowLayoutPanel1
@@ -293,7 +296,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(691, 26);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(668, 26);
             this.flowLayoutPanel1.TabIndex = 2;
             // 
             // TruncateLabel
@@ -310,7 +313,7 @@
             // 
             this.TruncateMinTextBox.Location = new System.Drawing.Point(71, 3);
             this.TruncateMinTextBox.Name = "TruncateMinTextBox";
-            this.TruncateMinTextBox.Size = new System.Drawing.Size(100, 20);
+            this.TruncateMinTextBox.Size = new System.Drawing.Size(59, 20);
             this.TruncateMinTextBox.TabIndex = 1;
             this.TruncateMinTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
@@ -318,7 +321,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(177, 6);
+            this.label3.Location = new System.Drawing.Point(136, 6);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(30, 13);
             this.label3.TabIndex = 2;
@@ -327,9 +330,9 @@
             // 
             // TruncateMaxTextBox
             // 
-            this.TruncateMaxTextBox.Location = new System.Drawing.Point(213, 3);
+            this.TruncateMaxTextBox.Location = new System.Drawing.Point(172, 3);
             this.TruncateMaxTextBox.Name = "TruncateMaxTextBox";
-            this.TruncateMaxTextBox.Size = new System.Drawing.Size(100, 20);
+            this.TruncateMaxTextBox.Size = new System.Drawing.Size(64, 20);
             this.TruncateMaxTextBox.TabIndex = 3;
             this.TruncateMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
@@ -338,7 +341,7 @@
             this.TruncateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.TruncateErrorLabel.AutoSize = true;
             this.TruncateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.TruncateErrorLabel.Location = new System.Drawing.Point(319, 6);
+            this.TruncateErrorLabel.Location = new System.Drawing.Point(242, 6);
             this.TruncateErrorLabel.Name = "TruncateErrorLabel";
             this.TruncateErrorLabel.Size = new System.Drawing.Size(19, 13);
             this.TruncateErrorLabel.TabIndex = 4;
@@ -365,11 +368,14 @@
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateMaxTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label5);
             this.flowLayoutPanel2.Controls.Add(this.InterpolationModeComboBox);
+            this.flowLayoutPanel2.Controls.Add(this.label6);
+            this.flowLayoutPanel2.Controls.Add(this.extrapolationPointsTextBox);
+            this.flowLayoutPanel2.Controls.Add(this.label7);
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateErrorLabel);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 35);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(691, 27);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(668, 27);
             this.flowLayoutPanel2.TabIndex = 3;
             // 
             // label2
@@ -386,7 +392,7 @@
             // 
             this.ExtrapolateMinTextBox.Location = new System.Drawing.Point(84, 3);
             this.ExtrapolateMinTextBox.Name = "ExtrapolateMinTextBox";
-            this.ExtrapolateMinTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ExtrapolateMinTextBox.Size = new System.Drawing.Size(64, 20);
             this.ExtrapolateMinTextBox.TabIndex = 4;
             this.ExtrapolateMinTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
@@ -394,7 +400,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(190, 7);
+            this.label4.Location = new System.Drawing.Point(154, 7);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(30, 13);
             this.label4.TabIndex = 5;
@@ -403,9 +409,9 @@
             // 
             // ExtrapolateMaxTextBox
             // 
-            this.ExtrapolateMaxTextBox.Location = new System.Drawing.Point(226, 3);
+            this.ExtrapolateMaxTextBox.Location = new System.Drawing.Point(190, 3);
             this.ExtrapolateMaxTextBox.Name = "ExtrapolateMaxTextBox";
-            this.ExtrapolateMaxTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ExtrapolateMaxTextBox.Size = new System.Drawing.Size(43, 20);
             this.ExtrapolateMaxTextBox.TabIndex = 6;
             this.ExtrapolateMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
@@ -414,7 +420,7 @@
             this.SaveAsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SaveAsButton.AutoSize = true;
             this.SaveAsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SaveAsButton.Location = new System.Drawing.Point(624, 499);
+            this.SaveAsButton.Location = new System.Drawing.Point(601, 447);
             this.SaveAsButton.Name = "SaveAsButton";
             this.SaveAsButton.Size = new System.Drawing.Size(82, 23);
             this.SaveAsButton.TabIndex = 3;
@@ -427,7 +433,7 @@
             this.ExtrapolateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ExtrapolateErrorLabel.AutoSize = true;
             this.ExtrapolateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(503, 7);
+            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(524, 7);
             this.ExtrapolateErrorLabel.Name = "ExtrapolateErrorLabel";
             this.ExtrapolateErrorLabel.Size = new System.Drawing.Size(19, 13);
             this.ExtrapolateErrorLabel.TabIndex = 7;
@@ -437,7 +443,7 @@
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(332, 7);
+            this.label5.Location = new System.Drawing.Point(239, 7);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(38, 13);
             this.label5.TabIndex = 8;
@@ -447,20 +453,50 @@
             // 
             this.InterpolationModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.InterpolationModeComboBox.Items.AddRange(new object[] {
+            "linear fit",
+            "quadratic fit",
             "parabolically terminated splines",
-            "natural cubic splines (f\'\'=0)",
-            "linear splines"});
-            this.InterpolationModeComboBox.Location = new System.Drawing.Point(376, 3);
+            "natural cubic splines (f\'\'=0)"});
+            this.InterpolationModeComboBox.Location = new System.Drawing.Point(283, 3);
             this.InterpolationModeComboBox.Name = "InterpolationModeComboBox";
             this.InterpolationModeComboBox.Size = new System.Drawing.Size(121, 21);
             this.InterpolationModeComboBox.TabIndex = 9;
             this.InterpolationModeComboBox.SelectedIndexChanged += new System.EventHandler(this.InterpolationModeComboBox_SelectedIndexChanged);
             // 
+            // label6
+            // 
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(410, 7);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(22, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = " of ";
+            // 
+            // extrapolationPointsTextBox
+            // 
+            this.extrapolationPointsTextBox.Location = new System.Drawing.Point(438, 3);
+            this.extrapolationPointsTextBox.Name = "extrapolationPointsTextBox";
+            this.extrapolationPointsTextBox.Size = new System.Drawing.Size(36, 20);
+            this.extrapolationPointsTextBox.TabIndex = 11;
+            this.extrapolationPointsTextBox.Text = "5";
+            this.extrapolationPointsTextBox.TextChanged += new System.EventHandler(this.extrapolationPointsTextBox_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(480, 7);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(38, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "points.";
+            // 
             // AdjustTFForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(709, 525);
+            this.ClientSize = new System.Drawing.Size(686, 473);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Name = "AdjustTFForm";
             this.Text = "Adjust TF";
@@ -520,5 +556,8 @@
         private System.Windows.Forms.Label ExtrapolateErrorLabel;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox InterpolationModeComboBox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox extrapolationPointsTextBox;
+        private System.Windows.Forms.Label label7;
     }
 }

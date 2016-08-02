@@ -13,6 +13,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.Interpolation;
 using ZedGraph;
+using MathNet.Numerics;
 
 namespace MRI_RF_TF_Tool {
     public partial class AdjustTFForm : Form {
@@ -124,20 +125,46 @@ namespace MRI_RF_TF_Tool {
             MagGraphControl.Invalidate();
             phaseGraphControl.Invalidate();
         }
-        public IInterpolation MakeInterpolator(IEnumerable<double> x, IEnumerable<double> y) {
+        public Func<double, double> MakeInterpolator(IEnumerable<double> x, IEnumerable<double> y) {
 
             SplineBoundaryCondition bc;
-            if (InterpolationModeComboBox.SelectedIndex == 2)
-                return LinearSpline.Interpolate(x, y);
+            int xlength = x.Count();
+            int mode = InterpolationModeComboBox.SelectedIndex;
+            if (mode == 0 || mode == 1) {
+                int order;
+                if (mode == 0)
+                    order = 1;
+                else
+                    order = 2;
+                int npoints;
+                if (!int.TryParse(extrapolationPointsTextBox.Text, out npoints))
+                    throw new Exception("Cannot parse number of points");
+                if (npoints > xlength)
+                    throw new Exception("Too many points required");
+                if (npoints < order)
+                    throw new Exception("More points must be used");
+                var leftInterp = Fit.PolynomialFunc(x.Take(npoints).ToArray(), y.Take(npoints).ToArray(),
+                    order);
+                var rightInterp = Fit.PolynomialFunc(x.Reverse().Take(npoints).Reverse().ToArray(),
+                    y.Reverse().Take(npoints).Reverse().ToArray(),
+                    order);
+                double middlex = x.Skip((int)(xlength / 2)).First();
+                return (x2 => (x2 <  middlex)?leftInterp(x2) : rightInterp(x2));
+            }
+            else if (mode == 4) {
+                IInterpolation I = LinearSpline.Interpolate(x, y);
+                return (x2 => I.Interpolate(x2));
+            } else {
+                if (InterpolationModeComboBox.SelectedIndex == 2)
+                    bc = SplineBoundaryCondition.ParabolicallyTerminated;
+                else
+                    bc = SplineBoundaryCondition.Natural;
 
-            if (InterpolationModeComboBox.SelectedIndex == 0)
-                bc = SplineBoundaryCondition.ParabolicallyTerminated;
-            else
-                bc = SplineBoundaryCondition.Natural;
-            
-            return CubicSpline.InterpolateBoundaries(
-                x, y,
-                bc, 0, bc, 0); // Values are unused for natural and parabolic termination
+                IInterpolation I = CubicSpline.InterpolateBoundaries(
+                    x, y,
+                    bc, 0, bc, 0); // Values are unused for natural and parabolic termination
+                return (x2 => I.Interpolate(x2));
+            }
         }
         private void Readjust() {
 
@@ -204,15 +231,20 @@ namespace MRI_RF_TF_Tool {
                     }else {
                         var mags = TFadjustedSr.Select(x => x.Magnitude);
                         var phases = TFadjustedSr.Select(x => x.Phase);
-                        /* CubicSpline spline = CubicSpline.InterpolateNatural(
-                             TFadjustedZ, mags);*/
-                        IInterpolation magspline = MakeInterpolator(TFadjustedZ, mags);
-                        IInterpolation phasepline = MakeInterpolator(TFadjustedZ, phases);
-                        var newx = Vector<double>.Build.Dense(numextra, i => currentMax + dx * (1 + i));
-                        var newy = newx.Select(x => Complex.FromPolarCoordinates(
-                            magspline.Interpolate(x), phasepline.Interpolate(x)));
-                        TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(TFadjustedZ.Concat(newx));
-                        TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(TFadjustedSr.Concat(newy));
+                        try {
+                            var magspline = MakeInterpolator(TFadjustedZ, mags);
+                            var phasepline = MakeInterpolator(TFadjustedZ, phases);
+                            var newx = Vector<double>.Build.Dense(numextra, i => currentMax + dx * (1 + i));
+                            var newy = newx.Select(x => Complex.FromPolarCoordinates(
+                                magspline(x), phasepline(x)));
+                            TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(TFadjustedZ.Concat(newx));
+                            TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(TFadjustedSr.Concat(newy));
+                        } catch (Exception e) {
+                            ExtrapolateErrorLabel.Text = e.Message; error = true;
+                            TFadjustedZ = null;
+                            TFadjustedSr = null;
+                            return;
+                        }
                     }
                 }
             }
@@ -234,16 +266,22 @@ namespace MRI_RF_TF_Tool {
                     else {
                         var mags = TFadjustedSr.Select(x => x.Magnitude);
                         var phases = TFadjustedSr.Select(x => x.Phase);
-                        /* CubicSpline spline = CubicSpline.InterpolateNatural(
-                             TFadjustedZ, mags);*/
-                        IInterpolation magspline = MakeInterpolator(TFadjustedZ, mags);
-                        IInterpolation phasepline = MakeInterpolator(TFadjustedZ, phases);
-                        var newx = Vector<double>.Build.Dense(numextra, i => currentMin - dx * (numextra-i));
-                        var newy = newx.Select(x => Complex.FromPolarCoordinates(
-                            magspline.Interpolate(x), phasepline.Interpolate(x)));
-                        TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(newx.Concat(TFadjustedZ));
-                        TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(newy.Concat(TFadjustedSr));
-                    }
+                        try {
+                            var magspline = MakeInterpolator(TFadjustedZ, mags);
+                            var phasepline = MakeInterpolator(TFadjustedZ, phases);
+                            var newx = Vector<double>.Build.Dense(numextra, i => currentMin - dx * (numextra - i));
+                            var newy = newx.Select(x => Complex.FromPolarCoordinates(
+                                magspline(x), phasepline(x)));
+                            TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(newx.Concat(TFadjustedZ));
+                            TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(newy.Concat(TFadjustedSr));
+                        }
+                        catch (Exception e) {
+                            ExtrapolateErrorLabel.Text = e.Message; error = true;
+                            TFadjustedZ = null;
+                            TFadjustedSr = null;
+                            return;
+                        }
+                     }
                 }
             }
             if (error) {
@@ -340,6 +378,11 @@ namespace MRI_RF_TF_Tool {
         }
 
         private void InterpolationModeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            extrapolationPointsTextBox.Enabled = (InterpolationModeComboBox.SelectedIndex <= 1);
+            Replot();
+        }
+
+        private void extrapolationPointsTextBox_TextChanged(object sender, EventArgs e) {
             Replot();
         }
     }
