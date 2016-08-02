@@ -27,13 +27,15 @@ namespace MRI_RF_TF_Tool {
             phaseGraphControl.GraphPane.IsFontsScaled = false;
             phaseGraphControl.GraphPane.Title.IsVisible = false;
             phaseGraphControl.GraphPane.XAxis.Title.Text = "Position (cm)";
-            phaseGraphControl.GraphPane.YAxis.Title.Text = "Phase (degrees)";
+            phaseGraphControl.GraphPane.YAxis.Title.Text = "Phase (rad)";
             phaseGraphControl.GraphPane.XAxis.Title.FontSpec.Size *= 0.7f;
             phaseGraphControl.GraphPane.YAxis.Title.FontSpec.Size *= 0.7f;
             phaseGraphControl.GraphPane.XAxis.Title.IsVisible = false;
         }
         Vector<double> TFz;
         Vector<Complex> TFSr;
+        Vector<double> TFadjustedZ;
+        Vector<Complex> TFadjustedSr;
         string TFFilename;
         Vector<double> Bkgz;
         Vector<Complex> BkgSr;
@@ -66,15 +68,23 @@ namespace MRI_RF_TF_Tool {
             liPhase.Line.IsVisible = drawLine;
         }
         private void Replot() {
+            Readjust();
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
             magGP.CurveList.Clear();
             phaseGP.CurveList.Clear();
+            string normStr = "";
+            if (NormalizeCheckBox.Checked)
+                normStr = " (normalized)";
             if(Bkgz != null && BkgSr != null)
-                AddTFToGps(Bkgz, BkgSr, "Reference", Color.Gray, SymbolType.None, drawLine: true,
+                AddTFToGps(Bkgz, BkgSr, "Reference" + normStr, Color.Gray, SymbolType.None, drawLine: true,
                     normalizeMaxMagnitude: NormalizeCheckBox.Checked);
             if (TFz != null && TFSr != null) {
-                AddTFToGps(TFz, TFSr, "TF", Color.Blue, SymbolType.XCross, drawLine: false);
+                AddTFToGps(TFz, TFSr, "TF" + normStr, Color.Blue, SymbolType.XCross, drawLine: false,
+                    normalizeMaxMagnitude: NormalizeCheckBox.Checked);
+            }
+            if (TFadjustedZ != null && TFadjustedSr != null) {
+                AddTFToGps(TFadjustedZ, TFadjustedSr, "Adjusted TF", Color.Black, SymbolType.None, drawLine: true);
             }
 
             magGP.AxisChange();
@@ -84,6 +94,56 @@ namespace MRI_RF_TF_Tool {
         }
         private void Readjust() {
 
+            double truncateMin = double.NaN;
+            double truncateMax = double.NaN;
+            TruncateErrorLabel.Text = "";
+            bool error = false;
+            int mini = 0;
+            int maxi = TFSr.Count - 1;
+            if (TruncateMinTextBox.Text.Trim() != "") {
+                if (!Double.TryParse(TruncateMinTextBox.Text, out truncateMin)) {
+                    TruncateErrorLabel.Text = "<--- Parse error"; error = true;
+                }
+                else {
+                    var v = TFz.Find(x => (x+x*1e-5 >= truncateMin));
+                    if (v != null)
+                        mini = v.Item1;
+                    else {
+                        TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
+                    }
+
+                }
+            }
+            if (TruncateMaxTextBox.Text.Trim() != "") {
+                if (!Double.TryParse(TruncateMaxTextBox.Text, out truncateMax)) {
+                    TruncateErrorLabel.Text = "<--- Parse error"; error = true;
+                }
+                else {
+                    var v = TFz.Find(x => (x-x*1e-5> truncateMax));
+                    if (v == null)
+                        maxi = TFz.Count -1;
+                    else if (v.Item1 == 0) {
+                        TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
+                    } else {
+                        maxi = v.Item1 - 1;
+                    }
+                }
+            }
+            if (!error && maxi < mini) {
+                TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
+            }
+            if (error) {
+                TFadjustedZ = null;
+                TFadjustedSr = null;
+                return;
+            }
+            TFadjustedZ = TFz.SubVector(mini, maxi - mini + 1);
+            TFadjustedSr = TFSr.SubVector(mini, maxi - mini + 1);
+            if(NormalizeCheckBox.Checked) {
+                double max = TFadjustedSr.AbsoluteMaximum().Magnitude;
+                if (max > 0)
+                    TFadjustedSr = TFadjustedSr.Divide(max);
+            }
         }
         private void BrowseTFButton_Click(object sender, EventArgs e) {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -136,6 +196,10 @@ namespace MRI_RF_TF_Tool {
         }
 
         private void NormalizeCheckBox_CheckedChanged(object sender, EventArgs e) {
+            Replot();
+        }
+
+        private void HangleTextChanged(object sender, EventArgs e) {
             Replot();
         }
     }

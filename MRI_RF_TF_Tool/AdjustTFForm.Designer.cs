@@ -44,6 +44,7 @@
             this.TruncateMinTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.TruncateMaxTextBox = new System.Windows.Forms.TextBox();
+            this.TruncateErrorLabel = new System.Windows.Forms.Label();
             this.NormalizeCheckBox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
@@ -285,6 +286,7 @@
             this.flowLayoutPanel1.Controls.Add(this.TruncateMinTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label3);
             this.flowLayoutPanel1.Controls.Add(this.TruncateMaxTextBox);
+            this.flowLayoutPanel1.Controls.Add(this.TruncateErrorLabel);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -307,6 +309,7 @@
             this.TruncateMinTextBox.Name = "TruncateMinTextBox";
             this.TruncateMinTextBox.Size = new System.Drawing.Size(100, 20);
             this.TruncateMinTextBox.TabIndex = 1;
+            this.TruncateMinTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
             // label3
             // 
@@ -325,6 +328,17 @@
             this.TruncateMaxTextBox.Name = "TruncateMaxTextBox";
             this.TruncateMaxTextBox.Size = new System.Drawing.Size(100, 20);
             this.TruncateMaxTextBox.TabIndex = 3;
+            this.TruncateMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
+            // 
+            // TruncateErrorLabel
+            // 
+            this.TruncateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.TruncateErrorLabel.AutoSize = true;
+            this.TruncateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
+            this.TruncateErrorLabel.Location = new System.Drawing.Point(319, 6);
+            this.TruncateErrorLabel.Name = "TruncateErrorLabel";
+            this.TruncateErrorLabel.Size = new System.Drawing.Size(0, 13);
+            this.TruncateErrorLabel.TabIndex = 4;
             // 
             // NormalizeCheckBox
             // 
@@ -367,6 +381,7 @@
             this.ExtrapolateMinTextBox.Name = "ExtrapolateMinTextBox";
             this.ExtrapolateMinTextBox.Size = new System.Drawing.Size(100, 20);
             this.ExtrapolateMinTextBox.TabIndex = 4;
+            this.ExtrapolateMinTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
             // label4
             // 
@@ -385,6 +400,7 @@
             this.ExtrapolateMaxTextBox.Name = "ExtrapolateMaxTextBox";
             this.ExtrapolateMaxTextBox.Size = new System.Drawing.Size(100, 20);
             this.ExtrapolateMaxTextBox.TabIndex = 6;
+            this.ExtrapolateMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
             // SaveAsButton
             // 
@@ -456,5 +472,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox ExtrapolateMaxTextBox;
         private System.Windows.Forms.Button SaveAsButton;
+        private System.Windows.Forms.Label TruncateErrorLabel;
     }
 }
