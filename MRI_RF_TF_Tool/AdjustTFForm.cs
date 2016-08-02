@@ -229,8 +229,9 @@ namespace MRI_RF_TF_Tool {
                     if (numextra > 300) {
                         ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
                     }else {
-                        var mags = TFadjustedSr.Select(x => x.Magnitude);
-                        var phases = TFadjustedSr.Select(x => x.Phase);
+                        var mags = TFadjustedSr.Map(x => x.Magnitude);
+                        var phases = TFadjustedSr.Map(x => x.Phase);
+                        phases = phases.Unwrap();
                         try {
                             var magspline = MakeInterpolator(TFadjustedZ, mags);
                             var phasepline = MakeInterpolator(TFadjustedZ, phases);
@@ -264,8 +265,9 @@ namespace MRI_RF_TF_Tool {
                         ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
                     }
                     else {
-                        var mags = TFadjustedSr.Select(x => x.Magnitude);
-                        var phases = TFadjustedSr.Select(x => x.Phase);
+                        var mags = TFadjustedSr.Map(x => x.Magnitude);
+                        var phases = TFadjustedSr.Map(x => x.Phase);
+                        phases = phases.Unwrap();
                         try {
                             var magspline = MakeInterpolator(TFadjustedZ, mags);
                             var phasepline = MakeInterpolator(TFadjustedZ, phases);
