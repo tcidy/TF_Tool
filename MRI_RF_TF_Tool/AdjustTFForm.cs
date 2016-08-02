@@ -16,11 +16,30 @@ using ZedGraph;
 
 namespace MRI_RF_TF_Tool {
     public partial class AdjustTFForm : Form {
+        int DropDownWidth(ComboBox myCombo) {
+            int maxWidth = 0;
+            int temp = 0;
+            System.Windows.Forms.Label label1 = new System.Windows.Forms.Label();
+
+            foreach (var obj in myCombo.Items) {
+                label1.Text = obj.ToString();
+                temp = label1.PreferredWidth;
+                if (temp > maxWidth) {
+                    maxWidth = temp;
+                }
+            }
+            label1.Dispose();
+            return maxWidth + SystemInformation.VerticalScrollBarWidth;
+        }
+
         public AdjustTFForm() {
             InitializeComponent();
 
             TruncateErrorLabel.Text = "";
             ExtrapolateErrorLabel.Text = "";
+
+            InterpolationModeComboBox.SelectedIndex = 0;
+            InterpolationModeComboBox.Width = DropDownWidth(InterpolationModeComboBox);
 
             MagGraphControl.GraphPane.IsFontsScaled = false;
             MagGraphControl.GraphPane.Title.IsVisible = false;
@@ -76,7 +95,11 @@ namespace MRI_RF_TF_Tool {
             liPhase.Line.Style = style;
         }
         private void Replot() {
-            Readjust();
+            TFadjustedSr = null;
+            TFadjustedZ = null;
+            if (TFSr != null)
+                Readjust();
+
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
             magGP.CurveList.Clear();
@@ -100,6 +123,21 @@ namespace MRI_RF_TF_Tool {
             phaseGP.AxisChange();
             MagGraphControl.Invalidate();
             phaseGraphControl.Invalidate();
+        }
+        public IInterpolation MakeInterpolator(IEnumerable<double> x, IEnumerable<double> y) {
+
+            SplineBoundaryCondition bc;
+            if (InterpolationModeComboBox.SelectedIndex == 2)
+                return LinearSpline.Interpolate(x, y);
+
+            if (InterpolationModeComboBox.SelectedIndex == 0)
+                bc = SplineBoundaryCondition.ParabolicallyTerminated;
+            else
+                bc = SplineBoundaryCondition.Natural;
+            
+            return CubicSpline.InterpolateBoundaries(
+                x, y,
+                bc, 0, bc, 0); // Values are unused for natural and parabolic termination
         }
         private void Readjust() {
 
@@ -168,12 +206,8 @@ namespace MRI_RF_TF_Tool {
                         var phases = TFadjustedSr.Select(x => x.Phase);
                         /* CubicSpline spline = CubicSpline.InterpolateNatural(
                              TFadjustedZ, mags);*/
-                        CubicSpline magspline = CubicSpline.InterpolateBoundaries(
-                            TFadjustedZ, mags, SplineBoundaryCondition.ParabolicallyTerminated, 0,
-                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
-                        CubicSpline phasepline = CubicSpline.InterpolateBoundaries(
-                            TFadjustedZ, phases, SplineBoundaryCondition.ParabolicallyTerminated, 0,
-                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        IInterpolation magspline = MakeInterpolator(TFadjustedZ, mags);
+                        IInterpolation phasepline = MakeInterpolator(TFadjustedZ, phases);
                         var newx = Vector<double>.Build.Dense(numextra, i => currentMax + dx * (1 + i));
                         var newy = newx.Select(x => Complex.FromPolarCoordinates(
                             magspline.Interpolate(x), phasepline.Interpolate(x)));
@@ -202,12 +236,8 @@ namespace MRI_RF_TF_Tool {
                         var phases = TFadjustedSr.Select(x => x.Phase);
                         /* CubicSpline spline = CubicSpline.InterpolateNatural(
                              TFadjustedZ, mags);*/
-                        CubicSpline magspline = CubicSpline.InterpolateBoundaries(
-                            TFadjustedZ, mags, SplineBoundaryCondition.ParabolicallyTerminated, 0,
-                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
-                        CubicSpline phasepline = CubicSpline.InterpolateBoundaries(
-                            TFadjustedZ, phases, SplineBoundaryCondition.ParabolicallyTerminated, 0,
-                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        IInterpolation magspline = MakeInterpolator(TFadjustedZ, mags);
+                        IInterpolation phasepline = MakeInterpolator(TFadjustedZ, phases);
                         var newx = Vector<double>.Build.Dense(numextra, i => currentMin - dx * (numextra-i));
                         var newy = newx.Select(x => Complex.FromPolarCoordinates(
                             magspline.Interpolate(x), phasepline.Interpolate(x)));
@@ -307,6 +337,10 @@ namespace MRI_RF_TF_Tool {
             matrices.Add(MatlabWriter.Pack(Z, "z"));
             matrices.Add(MatlabWriter.Pack(Sr, "Sr"));
             MatlabWriter.Store(sfd.FileName, matrices);
+        }
+
+        private void InterpolationModeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            Replot();
         }
     }
 }

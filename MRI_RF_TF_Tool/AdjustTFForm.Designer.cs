@@ -53,6 +53,8 @@
             this.ExtrapolateMaxTextBox = new System.Windows.Forms.TextBox();
             this.SaveAsButton = new System.Windows.Forms.Button();
             this.ExtrapolateErrorLabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.InterpolationModeComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -189,7 +191,7 @@
             this.VisualizationGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.VisualizationGroupbox.Location = new System.Drawing.Point(3, 86);
             this.VisualizationGroupbox.Name = "VisualizationGroupbox";
-            this.VisualizationGroupbox.Size = new System.Drawing.Size(703, 295);
+            this.VisualizationGroupbox.Size = new System.Drawing.Size(703, 294);
             this.VisualizationGroupbox.TabIndex = 1;
             this.VisualizationGroupbox.TabStop = false;
             this.VisualizationGroupbox.Text = "Visualization";
@@ -208,7 +210,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(697, 276);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(697, 275);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // MagGraphControl
@@ -225,7 +227,7 @@
             this.MagGraphControl.ScrollMinX = 0D;
             this.MagGraphControl.ScrollMinY = 0D;
             this.MagGraphControl.ScrollMinY2 = 0D;
-            this.MagGraphControl.Size = new System.Drawing.Size(691, 132);
+            this.MagGraphControl.Size = new System.Drawing.Size(691, 131);
             this.MagGraphControl.TabIndex = 0;
             this.MagGraphControl.UseExtendedPrintDialog = true;
             // 
@@ -234,7 +236,7 @@
             this.phaseGraphControl.AutoSize = true;
             this.phaseGraphControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.phaseGraphControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.phaseGraphControl.Location = new System.Drawing.Point(3, 141);
+            this.phaseGraphControl.Location = new System.Drawing.Point(3, 140);
             this.phaseGraphControl.Name = "phaseGraphControl";
             this.phaseGraphControl.ScrollGrace = 0D;
             this.phaseGraphControl.ScrollMaxX = 0D;
@@ -253,9 +255,9 @@
             this.FilterGroupbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.FilterGroupbox.Controls.Add(this.tableLayoutPanel4);
             this.FilterGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FilterGroupbox.Location = new System.Drawing.Point(3, 387);
+            this.FilterGroupbox.Location = new System.Drawing.Point(3, 386);
             this.FilterGroupbox.Name = "FilterGroupbox";
-            this.FilterGroupbox.Size = new System.Drawing.Size(703, 106);
+            this.FilterGroupbox.Size = new System.Drawing.Size(703, 107);
             this.FilterGroupbox.TabIndex = 2;
             this.FilterGroupbox.TabStop = false;
             this.FilterGroupbox.Text = "Filter";
@@ -276,7 +278,7 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(697, 87);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(697, 88);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // flowLayoutPanel1
@@ -345,7 +347,7 @@
             // NormalizeCheckBox
             // 
             this.NormalizeCheckBox.AutoSize = true;
-            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 67);
+            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 68);
             this.NormalizeCheckBox.Name = "NormalizeCheckBox";
             this.NormalizeCheckBox.Size = new System.Drawing.Size(148, 17);
             this.NormalizeCheckBox.TabIndex = 1;
@@ -361,18 +363,20 @@
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateMinTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label4);
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateMaxTextBox);
+            this.flowLayoutPanel2.Controls.Add(this.label5);
+            this.flowLayoutPanel2.Controls.Add(this.InterpolationModeComboBox);
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateErrorLabel);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 35);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(691, 26);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(691, 27);
             this.flowLayoutPanel2.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 6);
+            this.label2.Location = new System.Drawing.Point(3, 7);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(75, 13);
             this.label2.TabIndex = 0;
@@ -390,7 +394,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(190, 6);
+            this.label4.Location = new System.Drawing.Point(190, 7);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(30, 13);
             this.label4.TabIndex = 5;
@@ -423,11 +427,34 @@
             this.ExtrapolateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ExtrapolateErrorLabel.AutoSize = true;
             this.ExtrapolateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(332, 6);
+            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(503, 7);
             this.ExtrapolateErrorLabel.Name = "ExtrapolateErrorLabel";
             this.ExtrapolateErrorLabel.Size = new System.Drawing.Size(19, 13);
             this.ExtrapolateErrorLabel.TabIndex = 7;
             this.ExtrapolateErrorLabel.Text = "<--";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(332, 7);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(38, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = " using ";
+            // 
+            // InterpolationModeComboBox
+            // 
+            this.InterpolationModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.InterpolationModeComboBox.Items.AddRange(new object[] {
+            "parabolically terminated splines",
+            "natural cubic splines (f\'\'=0)",
+            "linear splines"});
+            this.InterpolationModeComboBox.Location = new System.Drawing.Point(376, 3);
+            this.InterpolationModeComboBox.Name = "InterpolationModeComboBox";
+            this.InterpolationModeComboBox.Size = new System.Drawing.Size(121, 21);
+            this.InterpolationModeComboBox.TabIndex = 9;
+            this.InterpolationModeComboBox.SelectedIndexChanged += new System.EventHandler(this.InterpolationModeComboBox_SelectedIndexChanged);
             // 
             // AdjustTFForm
             // 
@@ -491,5 +518,7 @@
         private System.Windows.Forms.Button SaveAsButton;
         private System.Windows.Forms.Label TruncateErrorLabel;
         private System.Windows.Forms.Label ExtrapolateErrorLabel;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox InterpolationModeComboBox;
     }
 }
