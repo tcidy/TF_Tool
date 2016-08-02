@@ -62,7 +62,7 @@
             this.CompareTFButton.Location = new System.Drawing.Point(3, 90);
             this.CompareTFButton.Name = "CompareTFButton";
             this.CompareTFButton.Size = new System.Drawing.Size(80, 23);
-            this.CompareTFButton.TabIndex = 0;
+            this.CompareTFButton.TabIndex = 3;
             this.CompareTFButton.Text = "Compare TFs";
             this.CompareTFButton.UseVisualStyleBackColor = true;
             this.CompareTFButton.Click += new System.EventHandler(this.CompareTFButton_Click);
@@ -72,7 +72,7 @@
             this.ProcessTempDataButton.Location = new System.Drawing.Point(177, 110);
             this.ProcessTempDataButton.Name = "ProcessTempDataButton";
             this.ProcessTempDataButton.Size = new System.Drawing.Size(113, 29);
-            this.ProcessTempDataButton.TabIndex = 1;
+            this.ProcessTempDataButton.TabIndex = 7;
             this.ProcessTempDataButton.Text = "Process Data";
             this.ProcessTempDataButton.UseVisualStyleBackColor = true;
             this.ProcessTempDataButton.Click += new System.EventHandler(this.ProcessTempDataButton_Click);
@@ -87,7 +87,7 @@
             this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 119);
             this.ProcessTempDataGroupBox.Name = "ProcessTempDataGroupBox";
             this.ProcessTempDataGroupBox.Size = new System.Drawing.Size(525, 161);
-            this.ProcessTempDataGroupBox.TabIndex = 2;
+            this.ProcessTempDataGroupBox.TabIndex = 4;
             this.ProcessTempDataGroupBox.TabStop = false;
             this.ProcessTempDataGroupBox.Text = "Process Data";
             // 
@@ -127,7 +127,7 @@
             this.flowLayoutPanel2.Location = new System.Drawing.Point(177, 3);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(339, 23);
-            this.flowLayoutPanel2.TabIndex = 6;
+            this.flowLayoutPanel2.TabIndex = 1;
             // 
             // VoltageModeRadioButton
             // 
@@ -167,7 +167,7 @@
             this.TempMeasIntervalTextBox.Location = new System.Drawing.Point(177, 32);
             this.TempMeasIntervalTextBox.Name = "TempMeasIntervalTextBox";
             this.TempMeasIntervalTextBox.Size = new System.Drawing.Size(100, 20);
-            this.TempMeasIntervalTextBox.TabIndex = 2;
+            this.TempMeasIntervalTextBox.TabIndex = 3;
             this.TempMeasIntervalTextBox.Text = "120";
             // 
             // TempMeasIntervalLabel
@@ -176,7 +176,7 @@
             this.TempMeasIntervalLabel.Location = new System.Drawing.Point(3, 29);
             this.TempMeasIntervalLabel.Name = "TempMeasIntervalLabel";
             this.TempMeasIntervalLabel.Size = new System.Drawing.Size(168, 13);
-            this.TempMeasIntervalLabel.TabIndex = 3;
+            this.TempMeasIntervalLabel.TabIndex = 2;
             this.TempMeasIntervalLabel.Text = "Temp Measurement Interval (sec):";
             // 
             // flowLayoutPanel1
@@ -218,7 +218,7 @@
             this.label3.Location = new System.Drawing.Point(3, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(60, 13);
-            this.label3.TabIndex = 7;
+            this.label3.TabIndex = 0;
             this.label3.Text = "Data Type:";
             // 
             // DoDataProcessingPlotsCheckBox
@@ -229,7 +229,7 @@
             this.DoDataProcessingPlotsCheckBox.Location = new System.Drawing.Point(177, 87);
             this.DoDataProcessingPlotsCheckBox.Name = "DoDataProcessingPlotsCheckBox";
             this.DoDataProcessingPlotsCheckBox.Size = new System.Drawing.Size(112, 17);
-            this.DoDataProcessingPlotsCheckBox.TabIndex = 8;
+            this.DoDataProcessingPlotsCheckBox.TabIndex = 6;
             this.DoDataProcessingPlotsCheckBox.Text = "Display Data Plots";
             this.DoDataProcessingPlotsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -264,7 +264,7 @@
             this.ScaleTFButton.Location = new System.Drawing.Point(3, 32);
             this.ScaleTFButton.Name = "ScaleTFButton";
             this.ScaleTFButton.Size = new System.Drawing.Size(80, 23);
-            this.ScaleTFButton.TabIndex = 3;
+            this.ScaleTFButton.TabIndex = 1;
             this.ScaleTFButton.Text = "Scale TFs";
             this.ScaleTFButton.UseVisualStyleBackColor = true;
             this.ScaleTFButton.Click += new System.EventHandler(this.ScaleTFButton_Click);
@@ -277,7 +277,7 @@
             this.validateButton.Location = new System.Drawing.Point(3, 61);
             this.validateButton.Name = "validateButton";
             this.validateButton.Size = new System.Drawing.Size(80, 23);
-            this.validateButton.TabIndex = 4;
+            this.validateButton.TabIndex = 2;
             this.validateButton.Text = "Validate TFs";
             this.validateButton.UseVisualStyleBackColor = true;
             this.validateButton.Click += new System.EventHandler(this.validateButton_Click);
@@ -290,7 +290,7 @@
             this.AdjustTFButton.Location = new System.Drawing.Point(3, 3);
             this.AdjustTFButton.Name = "AdjustTFButton";
             this.AdjustTFButton.Size = new System.Drawing.Size(80, 23);
-            this.AdjustTFButton.TabIndex = 5;
+            this.AdjustTFButton.TabIndex = 0;
             this.AdjustTFButton.Text = "Adjust TF";
             this.AdjustTFButton.UseVisualStyleBackColor = true;
             this.AdjustTFButton.Click += new System.EventHandler(this.AdjustTFButton_Click);
