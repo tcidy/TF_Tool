@@ -52,6 +52,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.ExtrapolateMaxTextBox = new System.Windows.Forms.TextBox();
             this.SaveAsButton = new System.Windows.Forms.Button();
+            this.ExtrapolateErrorLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -337,8 +338,9 @@
             this.TruncateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
             this.TruncateErrorLabel.Location = new System.Drawing.Point(319, 6);
             this.TruncateErrorLabel.Name = "TruncateErrorLabel";
-            this.TruncateErrorLabel.Size = new System.Drawing.Size(0, 13);
+            this.TruncateErrorLabel.Size = new System.Drawing.Size(19, 13);
             this.TruncateErrorLabel.TabIndex = 4;
+            this.TruncateErrorLabel.Text = "<--";
             // 
             // NormalizeCheckBox
             // 
@@ -359,6 +361,7 @@
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateMinTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label4);
             this.flowLayoutPanel2.Controls.Add(this.ExtrapolateMaxTextBox);
+            this.flowLayoutPanel2.Controls.Add(this.ExtrapolateErrorLabel);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 35);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
@@ -411,6 +414,17 @@
             this.SaveAsButton.TabIndex = 3;
             this.SaveAsButton.Text = "Save TF As...";
             this.SaveAsButton.UseVisualStyleBackColor = true;
+            // 
+            // ExtrapolateErrorLabel
+            // 
+            this.ExtrapolateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ExtrapolateErrorLabel.AutoSize = true;
+            this.ExtrapolateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
+            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(332, 6);
+            this.ExtrapolateErrorLabel.Name = "ExtrapolateErrorLabel";
+            this.ExtrapolateErrorLabel.Size = new System.Drawing.Size(19, 13);
+            this.ExtrapolateErrorLabel.TabIndex = 7;
+            this.ExtrapolateErrorLabel.Text = "<--";
             // 
             // AdjustTFForm
             // 
@@ -473,5 +487,6 @@
         private System.Windows.Forms.TextBox ExtrapolateMaxTextBox;
         private System.Windows.Forms.Button SaveAsButton;
         private System.Windows.Forms.Label TruncateErrorLabel;
+        private System.Windows.Forms.Label ExtrapolateErrorLabel;
     }
 }

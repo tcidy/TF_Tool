@@ -11,12 +11,17 @@ using System.Windows.Forms;
 using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.Data.Matlab;
+using MathNet.Numerics.Interpolation;
 using ZedGraph;
 
 namespace MRI_RF_TF_Tool {
     public partial class AdjustTFForm : Form {
         public AdjustTFForm() {
             InitializeComponent();
+
+            TruncateErrorLabel.Text = "";
+            ExtrapolateErrorLabel.Text = "";
+
             MagGraphControl.GraphPane.IsFontsScaled = false;
             MagGraphControl.GraphPane.Title.IsVisible = false;
             MagGraphControl.GraphPane.XAxis.Title.Text = "Position (cm)";
@@ -42,7 +47,8 @@ namespace MRI_RF_TF_Tool {
         string BkgFilename;
         private void AddTFToGps(Vector<double> z, Vector<Complex> sr,
             string name, Color color, SymbolType symbol = SymbolType.None, bool drawLine = true,
-            bool normalizeMaxMagnitude = false) {
+            bool normalizeMaxMagnitude = false, System.Drawing.Drawing2D.DashStyle style =
+            System.Drawing.Drawing2D.DashStyle.Solid) {
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
 
@@ -64,8 +70,10 @@ namespace MRI_RF_TF_Tool {
 
             var liMag = magGP.AddCurve(name, pplmag, color, symbol);
             liMag.Line.IsVisible = drawLine;
+            liMag.Line.Style = style;
             var liPhase = phaseGP.AddCurve(name, pplphase, color,symbol);
             liPhase.Line.IsVisible = drawLine;
+            liPhase.Line.Style = style;
         }
         private void Replot() {
             Readjust();
@@ -78,13 +86,14 @@ namespace MRI_RF_TF_Tool {
                 normStr = " (normalized)";
             if(Bkgz != null && BkgSr != null)
                 AddTFToGps(Bkgz, BkgSr, "Reference" + normStr, Color.Gray, SymbolType.None, drawLine: true,
-                    normalizeMaxMagnitude: NormalizeCheckBox.Checked);
+                    normalizeMaxMagnitude: NormalizeCheckBox.Checked, style: System.Drawing.Drawing2D.DashStyle.Dash);
             if (TFz != null && TFSr != null) {
                 AddTFToGps(TFz, TFSr, "TF" + normStr, Color.Blue, SymbolType.XCross, drawLine: false,
                     normalizeMaxMagnitude: NormalizeCheckBox.Checked);
             }
             if (TFadjustedZ != null && TFadjustedSr != null) {
-                AddTFToGps(TFadjustedZ, TFadjustedSr, "Adjusted TF", Color.Black, SymbolType.None, drawLine: true);
+                AddTFToGps(TFadjustedZ, TFadjustedSr, "Adjusted TF",
+                    Color.Black, SymbolType.XCross, drawLine: true);
             }
 
             magGP.AxisChange();
@@ -97,6 +106,7 @@ namespace MRI_RF_TF_Tool {
             double truncateMin = double.NaN;
             double truncateMax = double.NaN;
             TruncateErrorLabel.Text = "";
+            ExtrapolateErrorLabel.Text = "";
             bool error = false;
             int mini = 0;
             int maxi = TFSr.Count - 1;
@@ -139,7 +149,80 @@ namespace MRI_RF_TF_Tool {
             }
             TFadjustedZ = TFz.SubVector(mini, maxi - mini + 1);
             TFadjustedSr = TFSr.SubVector(mini, maxi - mini + 1);
-            if(NormalizeCheckBox.Checked) {
+
+            // Extrapolation
+            if (ExtrapolateMaxTextBox.Text.Trim() != "") {
+                double extrapMax;
+                double currentMax = TFadjustedZ.Last();
+                if (TFz.Count < 3) {
+                    ExtrapolateErrorLabel.Text = "<--- At least three datapoints required"; error = true;
+                } else if(!double.TryParse(ExtrapolateMaxTextBox.Text, out extrapMax)) {
+                    ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
+                } else if (extrapMax > currentMax) {
+                    double dx = TFadjustedZ[1] - TFadjustedZ[0];
+                    int numextra = 1 + (int)((extrapMax - currentMax)/dx);
+                    if (numextra > 300) {
+                        ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
+                    }else {
+                        var mags = TFadjustedSr.Select(x => x.Magnitude);
+                        var phases = TFadjustedSr.Select(x => x.Phase);
+                        /* CubicSpline spline = CubicSpline.InterpolateNatural(
+                             TFadjustedZ, mags);*/
+                        CubicSpline magspline = CubicSpline.InterpolateBoundaries(
+                            TFadjustedZ, mags, SplineBoundaryCondition.ParabolicallyTerminated, 0,
+                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        CubicSpline phasepline = CubicSpline.InterpolateBoundaries(
+                            TFadjustedZ, phases, SplineBoundaryCondition.ParabolicallyTerminated, 0,
+                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        var newx = Vector<double>.Build.Dense(numextra, i => currentMax + dx * (1 + i));
+                        var newy = newx.Select(x => Complex.FromPolarCoordinates(
+                            magspline.Interpolate(x), phasepline.Interpolate(x)));
+                        TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(TFadjustedZ.Concat(newx));
+                        TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(TFadjustedSr.Concat(newy));
+                    }
+                }
+            }
+            if (ExtrapolateMinTextBox.Text.Trim() != "") {
+                double extrapMin;
+                double currentMin = TFadjustedZ[0];
+                if (TFz.Count < 3) {
+                    ExtrapolateErrorLabel.Text = "<--- At least three datapoints required"; error = true;
+                }
+                else if (!double.TryParse(ExtrapolateMinTextBox.Text, out extrapMin)) {
+                    ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
+                }
+                else if (extrapMin < currentMin) {
+                    double dx = TFadjustedZ[1] - TFadjustedZ[0];
+                    int numextra = 1 + (int)((currentMin - extrapMin) / dx);
+                    if (numextra > 300) {
+                        ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
+                    }
+                    else {
+                        var mags = TFadjustedSr.Select(x => x.Magnitude);
+                        var phases = TFadjustedSr.Select(x => x.Phase);
+                        /* CubicSpline spline = CubicSpline.InterpolateNatural(
+                             TFadjustedZ, mags);*/
+                        CubicSpline magspline = CubicSpline.InterpolateBoundaries(
+                            TFadjustedZ, mags, SplineBoundaryCondition.ParabolicallyTerminated, 0,
+                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        CubicSpline phasepline = CubicSpline.InterpolateBoundaries(
+                            TFadjustedZ, phases, SplineBoundaryCondition.ParabolicallyTerminated, 0,
+                            SplineBoundaryCondition.ParabolicallyTerminated, 0);
+                        var newx = Vector<double>.Build.Dense(numextra, i => currentMin - dx * (numextra-i));
+                        var newy = newx.Select(x => Complex.FromPolarCoordinates(
+                            magspline.Interpolate(x), phasepline.Interpolate(x)));
+                        TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(newx.Concat(TFadjustedZ));
+                        TFadjustedSr = Vector<Complex>.Build.DenseOfEnumerable(newy.Concat(TFadjustedSr));
+                    }
+                }
+            }
+            if (error) {
+                TFadjustedZ = null;
+                TFadjustedSr = null;
+                return;
+            }
+            // Normalization
+            if (NormalizeCheckBox.Checked) {
                 double max = TFadjustedSr.AbsoluteMaximum().Magnitude;
                 if (max > 0)
                     TFadjustedSr = TFadjustedSr.Divide(max);
