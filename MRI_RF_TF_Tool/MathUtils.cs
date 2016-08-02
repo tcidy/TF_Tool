@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.Statistics;
 
 namespace MRI_RF_TF_Tool
 {
@@ -26,6 +27,18 @@ namespace MRI_RF_TF_Tool
                 r[i] += offset;
             }
             return r;
+        }
+        public static double SlopeUncertainty(double slope, IEnumerable<double> predicted, IEnumerable<double>  measured) {
+            var meanvar = Statistics.MeanVariance(predicted);
+            int count = predicted.Count();
+            double mean = meanvar.Item1;
+            double MSDpredicted = meanvar.Item2 * (count-1);
+            var errorsSQ = measured.Zip(predicted).Select(x => x.Item1 - slope * x.Item2)
+                .Select(x => x*x);
+            var slopeUncertainty = Math.Sqrt(
+                ((count / (count - 2) * Statistics.Mean(errorsSQ)) / (MSDpredicted))
+                );
+            return slopeUncertainty;
         }
     }
 }
