@@ -244,7 +244,8 @@ namespace MRI_RF_TF_Tool {
                 "Unscaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
                 "Scaled TF Predicted " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
                 "Measured " + (VoltageMode? "Peak Header Voltage" : "Temperature"),
-                "Etan Scaling Factor"
+                "Etan Scaling Factor",
+                "Calculated TF Scaling Factor"
             };
             SaveFileDialog sfd = new SaveFileDialog();
             //sfd.InitialDirectory = @"C:\Users\ConraN01\Documents\Spyder_WS\MRI_RF_TF_Tool_Project\Test Files for Python Utility\Raw Neuro Header Voltage Data Files";
@@ -264,7 +265,8 @@ namespace MRI_RF_TF_Tool {
                             row.Item2.ToString(),
                             (row.Item2/scaleFactor).ToString(),
                             (VoltageMode? row.Item1.summrow.PeakHeaderVoltage : row.Item1.summrow.MeasuredTemperature).ToString(),
-                            row.Item1.summrow.ETanScalingFactor.ToString()
+                            row.Item1.summrow.ETanScalingFactor.ToString(),
+                            scaleFactor.ToString()
                         }));
                         i++;
                     }
@@ -292,6 +294,7 @@ namespace MRI_RF_TF_Tool {
                             etanRows[i].summrow.PeakHeaderVoltage :
                             etanRows[i].summrow.MeasuredTemperature;
                         ws.Cells[i + 2, 6].Value = etanRows[i].summrow.ETanScalingFactor;
+                        ws.Cells[i + 2, 7].Value = scaleFactor;
                     }
                     ws.Cells[ws.Dimension.Address].AutoFitColumns();
                     package.SaveAs(newFile);
