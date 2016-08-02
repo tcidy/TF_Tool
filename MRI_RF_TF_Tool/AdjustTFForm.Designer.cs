@@ -408,12 +408,15 @@
             // SaveAsButton
             // 
             this.SaveAsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveAsButton.Location = new System.Drawing.Point(631, 499);
+            this.SaveAsButton.AutoSize = true;
+            this.SaveAsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SaveAsButton.Location = new System.Drawing.Point(624, 499);
             this.SaveAsButton.Name = "SaveAsButton";
-            this.SaveAsButton.Size = new System.Drawing.Size(75, 23);
+            this.SaveAsButton.Size = new System.Drawing.Size(82, 23);
             this.SaveAsButton.TabIndex = 3;
             this.SaveAsButton.Text = "Save TF As...";
             this.SaveAsButton.UseVisualStyleBackColor = true;
+            this.SaveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
             // 
             // ExtrapolateErrorLabel
             // 

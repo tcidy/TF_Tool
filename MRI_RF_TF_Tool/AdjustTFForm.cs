@@ -285,5 +285,28 @@ namespace MRI_RF_TF_Tool {
         private void HangleTextChanged(object sender, EventArgs e) {
             Replot();
         }
+
+        private void SaveAsButton_Click(object sender, EventArgs e) {
+            Readjust();
+            if (TFadjustedZ == null) {
+                MessageBox.Show(this, "Cannot save an adjusted TF while in an error state.",
+                    "Error saving", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+             }
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Matlab MAT (*.mat)|*.mat|All Files (*.*)|*.*";
+            sfd.FileName = Path.GetFileNameWithoutExtension(TFFilename) + "_adj.mat";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var Z = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { TFadjustedZ });
+            var Sr = CreateMatrix.DenseOfColumnVectors(new Vector<Complex>[] { TFadjustedSr });
+
+            var matrices = new List<MatlabMatrix>();
+            matrices.Add(MatlabWriter.Pack(Z, "z"));
+            matrices.Add(MatlabWriter.Pack(Sr, "Sr"));
+            MatlabWriter.Store(sfd.FileName, matrices);
+        }
     }
 }
