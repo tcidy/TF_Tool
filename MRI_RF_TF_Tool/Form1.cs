@@ -131,5 +131,10 @@ namespace MRI_RF_TF_Tool
             ValidateTFForm vtff = new ValidateTFForm();
             vtff.Show();
         }
+
+        private void AdjustTFButton_Click(object sender, EventArgs e) {
+            AdjustTFForm atf = new AdjustTFForm();
+            atf.Show(this);
+        }
     }
 }

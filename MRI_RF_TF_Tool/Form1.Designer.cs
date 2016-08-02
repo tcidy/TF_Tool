@@ -46,6 +46,7 @@
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.ScaleTFButton = new System.Windows.Forms.Button();
             this.validateButton = new System.Windows.Forms.Button();
+            this.AdjustTFButton = new System.Windows.Forms.Button();
             this.ProcessTempDataGroupBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -55,9 +56,12 @@
             // 
             // CompareTFButton
             // 
-            this.CompareTFButton.Location = new System.Drawing.Point(3, 61);
+            this.CompareTFButton.AutoSize = true;
+            this.CompareTFButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.CompareTFButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CompareTFButton.Location = new System.Drawing.Point(3, 90);
             this.CompareTFButton.Name = "CompareTFButton";
-            this.CompareTFButton.Size = new System.Drawing.Size(93, 23);
+            this.CompareTFButton.Size = new System.Drawing.Size(80, 23);
             this.CompareTFButton.TabIndex = 0;
             this.CompareTFButton.Text = "Compare TFs";
             this.CompareTFButton.UseVisualStyleBackColor = true;
@@ -80,7 +84,7 @@
             this.tableLayoutPanel3.SetColumnSpan(this.ProcessTempDataGroupBox, 2);
             this.ProcessTempDataGroupBox.Controls.Add(this.tableLayoutPanel1);
             this.ProcessTempDataGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 90);
+            this.ProcessTempDataGroupBox.Location = new System.Drawing.Point(3, 119);
             this.ProcessTempDataGroupBox.Name = "ProcessTempDataGroupBox";
             this.ProcessTempDataGroupBox.Size = new System.Drawing.Size(525, 161);
             this.ProcessTempDataGroupBox.TabIndex = 2;
@@ -234,14 +238,16 @@
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.Controls.Add(this.ProcessTempDataGroupBox, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.CompareTFButton, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.ScaleTFButton, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.validateButton, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.ProcessTempDataGroupBox, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.CompareTFButton, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.ScaleTFButton, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.validateButton, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.AdjustTFButton, 0, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 5;
+            this.tableLayoutPanel3.RowCount = 6;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -252,9 +258,12 @@
             // 
             // ScaleTFButton
             // 
-            this.ScaleTFButton.Location = new System.Drawing.Point(3, 3);
+            this.ScaleTFButton.AutoSize = true;
+            this.ScaleTFButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ScaleTFButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScaleTFButton.Location = new System.Drawing.Point(3, 32);
             this.ScaleTFButton.Name = "ScaleTFButton";
-            this.ScaleTFButton.Size = new System.Drawing.Size(93, 23);
+            this.ScaleTFButton.Size = new System.Drawing.Size(80, 23);
             this.ScaleTFButton.TabIndex = 3;
             this.ScaleTFButton.Text = "Scale TFs";
             this.ScaleTFButton.UseVisualStyleBackColor = true;
@@ -262,13 +271,29 @@
             // 
             // validateButton
             // 
-            this.validateButton.Location = new System.Drawing.Point(3, 32);
+            this.validateButton.AutoSize = true;
+            this.validateButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.validateButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.validateButton.Location = new System.Drawing.Point(3, 61);
             this.validateButton.Name = "validateButton";
-            this.validateButton.Size = new System.Drawing.Size(93, 23);
+            this.validateButton.Size = new System.Drawing.Size(80, 23);
             this.validateButton.TabIndex = 4;
             this.validateButton.Text = "Validate TFs";
             this.validateButton.UseVisualStyleBackColor = true;
             this.validateButton.Click += new System.EventHandler(this.validateButton_Click);
+            // 
+            // AdjustTFButton
+            // 
+            this.AdjustTFButton.AutoSize = true;
+            this.AdjustTFButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.AdjustTFButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AdjustTFButton.Location = new System.Drawing.Point(3, 3);
+            this.AdjustTFButton.Name = "AdjustTFButton";
+            this.AdjustTFButton.Size = new System.Drawing.Size(80, 23);
+            this.AdjustTFButton.TabIndex = 5;
+            this.AdjustTFButton.Text = "Adjust TF";
+            this.AdjustTFButton.UseVisualStyleBackColor = true;
+            this.AdjustTFButton.Click += new System.EventHandler(this.AdjustTFButton_Click);
             // 
             // Form1
             // 
@@ -312,6 +337,7 @@
         private System.Windows.Forms.CheckBox DoDataProcessingPlotsCheckBox;
         private System.Windows.Forms.Button ScaleTFButton;
         private System.Windows.Forms.Button validateButton;
+        private System.Windows.Forms.Button AdjustTFButton;
     }
 }
 
