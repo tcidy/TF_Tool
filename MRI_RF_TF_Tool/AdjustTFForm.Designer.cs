@@ -26,12 +26,12 @@
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.BackgroundTFFilenameLabel = new System.Windows.Forms.Label();
             this.TFLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.BrowseTFButton = new System.Windows.Forms.Button();
             this.BrowseRefButton = new System.Windows.Forms.Button();
             this.TFFilenameLabel = new System.Windows.Forms.Label();
-            this.BackgroundTFFilenameLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.VisualizationGroupbox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -39,12 +39,12 @@
             this.phaseGraphControl = new ZedGraph.ZedGraphControl();
             this.FilterGroupbox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.NormalizeCheckBox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.TruncateLabel = new System.Windows.Forms.Label();
             this.TruncateMinTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.TruncateMaxTextBox = new System.Windows.Forms.TextBox();
+            this.NormalizeCheckBox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.ExtrapolateMinTextBox = new System.Windows.Forms.TextBox();
@@ -98,6 +98,16 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(697, 58);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
+            // BackgroundTFFilenameLabel
+            // 
+            this.BackgroundTFFilenameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.BackgroundTFFilenameLabel.AutoSize = true;
+            this.BackgroundTFFilenameLabel.Location = new System.Drawing.Point(220, 37);
+            this.BackgroundTFFilenameLabel.Name = "BackgroundTFFilenameLabel";
+            this.BackgroundTFFilenameLabel.Size = new System.Drawing.Size(16, 13);
+            this.BackgroundTFFilenameLabel.TabIndex = 5;
+            this.BackgroundTFFilenameLabel.Text = "...";
+            // 
             // TFLabel
             // 
             this.TFLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -136,6 +146,7 @@
             this.BrowseRefButton.TabIndex = 3;
             this.BrowseRefButton.Text = "Browse...";
             this.BrowseRefButton.UseVisualStyleBackColor = true;
+            this.BrowseRefButton.Click += new System.EventHandler(this.BrowseRefButton_Click);
             // 
             // TFFilenameLabel
             // 
@@ -146,16 +157,6 @@
             this.TFFilenameLabel.Size = new System.Drawing.Size(16, 13);
             this.TFFilenameLabel.TabIndex = 4;
             this.TFFilenameLabel.Text = "...";
-            // 
-            // BackgroundTFFilenameLabel
-            // 
-            this.BackgroundTFFilenameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.BackgroundTFFilenameLabel.AutoSize = true;
-            this.BackgroundTFFilenameLabel.Location = new System.Drawing.Point(220, 37);
-            this.BackgroundTFFilenameLabel.Name = "BackgroundTFFilenameLabel";
-            this.BackgroundTFFilenameLabel.Size = new System.Drawing.Size(16, 13);
-            this.BackgroundTFFilenameLabel.TabIndex = 5;
-            this.BackgroundTFFilenameLabel.Text = "...";
             // 
             // tableLayoutPanel2
             // 
@@ -276,16 +277,6 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(697, 87);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
-            // NormalizeCheckBox
-            // 
-            this.NormalizeCheckBox.AutoSize = true;
-            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 67);
-            this.NormalizeCheckBox.Name = "NormalizeCheckBox";
-            this.NormalizeCheckBox.Size = new System.Drawing.Size(148, 17);
-            this.NormalizeCheckBox.TabIndex = 1;
-            this.NormalizeCheckBox.Text = "Normalize max(abs(TF))=1";
-            this.NormalizeCheckBox.UseVisualStyleBackColor = true;
-            // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.AutoSize = true;
@@ -334,6 +325,17 @@
             this.TruncateMaxTextBox.Name = "TruncateMaxTextBox";
             this.TruncateMaxTextBox.Size = new System.Drawing.Size(100, 20);
             this.TruncateMaxTextBox.TabIndex = 3;
+            // 
+            // NormalizeCheckBox
+            // 
+            this.NormalizeCheckBox.AutoSize = true;
+            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 67);
+            this.NormalizeCheckBox.Name = "NormalizeCheckBox";
+            this.NormalizeCheckBox.Size = new System.Drawing.Size(148, 17);
+            this.NormalizeCheckBox.TabIndex = 1;
+            this.NormalizeCheckBox.Text = "Normalize max(abs(TF))=1";
+            this.NormalizeCheckBox.UseVisualStyleBackColor = true;
+            this.NormalizeCheckBox.CheckedChanged += new System.EventHandler(this.NormalizeCheckBox_CheckedChanged);
             // 
             // flowLayoutPanel2
             // 
