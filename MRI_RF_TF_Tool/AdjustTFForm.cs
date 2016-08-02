@@ -38,6 +38,7 @@ namespace MRI_RF_TF_Tool {
 
             TruncateErrorLabel.Text = "";
             ExtrapolateErrorLabel.Text = "";
+            forcedValsErrorLabel.Text = "";
 
             InterpolationModeComboBox.SelectedIndex = 0;
             InterpolationModeComboBox.Width = DropDownWidth(InterpolationModeComboBox);
@@ -67,17 +68,13 @@ namespace MRI_RF_TF_Tool {
         string BkgFilename;
         private void AddTFToGps(Vector<double> z, Vector<Complex> sr,
             string name, Color color, SymbolType symbol = SymbolType.None, bool drawLine = true,
-            bool normalizeMaxMagnitude = false, System.Drawing.Drawing2D.DashStyle style =
+            double scaleFactor = 1.0, System.Drawing.Drawing2D.DashStyle style =
             System.Drawing.Drawing2D.DashStyle.Solid) {
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
 
             var srmag = sr.Map(c => c.Magnitude);
-            if (normalizeMaxMagnitude) {
-                double max = srmag.Maximum();
-                if (max > 0)
-                    srmag = srmag.Divide(max);
-            }
+            srmag = srmag.Multiply(scaleFactor);
             var srphase = sr.Map(c => c.Phase);
             srphase = srphase.Unwrap();
             PointPairList pplmag = new PointPairList(
@@ -95,11 +92,23 @@ namespace MRI_RF_TF_Tool {
             liPhase.Line.IsVisible = drawLine;
             liPhase.Line.Style = style;
         }
+        double adjustmentScaleFactor = 1;
         private void Replot() {
             TFadjustedSr = null;
             TFadjustedZ = null;
+            double scaleFactor = 1;
+            double bkgScaleFactor = 1;
+
             if (TFSr != null)
                 Readjust();
+            if (NormalizeCheckBox.Checked) {
+                if (BkgSr != null)
+                    bkgScaleFactor = (BkgSr.AbsoluteMaximum().Magnitude);
+                if (bkgScaleFactor == 0)
+                    bkgScaleFactor = 1;
+                else
+                    bkgScaleFactor = 1 / bkgScaleFactor;
+            }
 
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
@@ -110,14 +119,14 @@ namespace MRI_RF_TF_Tool {
                 normStr = " (normalized)";
             if(Bkgz != null && BkgSr != null)
                 AddTFToGps(Bkgz, BkgSr, "Reference" + normStr, Color.Gray, SymbolType.None, drawLine: true,
-                    normalizeMaxMagnitude: NormalizeCheckBox.Checked, style: System.Drawing.Drawing2D.DashStyle.Dash);
+                    scaleFactor: bkgScaleFactor, style: System.Drawing.Drawing2D.DashStyle.Dash);
             if (TFz != null && TFSr != null) {
                 AddTFToGps(TFz, TFSr, "TF" + normStr, Color.Blue, SymbolType.XCross, drawLine: false,
-                    normalizeMaxMagnitude: NormalizeCheckBox.Checked);
+                    scaleFactor: adjustmentScaleFactor);
             }
             if (TFadjustedZ != null && TFadjustedSr != null) {
                 AddTFToGps(TFadjustedZ, TFadjustedSr, "Adjusted TF",
-                    Color.Black, SymbolType.XCross, drawLine: true);
+                    color: Color.Black, symbol: SymbolType.XCross, drawLine: true);
             }
 
             magGP.AxisChange();
@@ -130,12 +139,9 @@ namespace MRI_RF_TF_Tool {
             SplineBoundaryCondition bc;
             int xlength = x.Count();
             int mode = InterpolationModeComboBox.SelectedIndex;
-            if (mode == 0 || mode == 1) {
+            if (mode == 0 || mode == 1 || mode == 2) {
                 int order;
-                if (mode == 0)
-                    order = 1;
-                else
-                    order = 2;
+                order = mode + 1; // linear => 1; quadratic => 2; cubic => 3
                 int npoints;
                 if (!int.TryParse(extrapolationPointsTextBox.Text, out npoints))
                     throw new Exception("Cannot parse number of points");
@@ -151,7 +157,7 @@ namespace MRI_RF_TF_Tool {
                 double middlex = x.Skip((int)(xlength / 2)).First();
                 return (x2 => (x2 <  middlex)?leftInterp(x2) : rightInterp(x2));
             }
-            else if (mode == 4) {
+            else if (mode == 5) {
                 IInterpolation I = LinearSpline.Interpolate(x, y);
                 return (x2 => I.Interpolate(x2));
             } else {
@@ -170,38 +176,70 @@ namespace MRI_RF_TF_Tool {
 
             double truncateMin = double.NaN;
             double truncateMax = double.NaN;
+            double extrapolateMax = double.NaN, extrapolateMin = double.NaN;
+            double TFMinVal = double.NaN, TFMaxVal = double.NaN;
             TruncateErrorLabel.Text = "";
             ExtrapolateErrorLabel.Text = "";
+            forcedValsErrorLabel.Text = "";
             bool error = false;
             int mini = 0;
             int maxi = TFSr.Count - 1;
-            if (TruncateMinTextBox.Text.Trim() != "") {
-                if (!Double.TryParse(TruncateMinTextBox.Text, out truncateMin)) {
-                    TruncateErrorLabel.Text = "<--- Parse error"; error = true;
-                }
-                else {
-                    var v = TFz.Find(x => (x+x*1e-5 >= truncateMin));
-                    if (v != null)
-                        mini = v.Item1;
-                    else {
-                        TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
-                    }
+            TFadjustedZ = null;
+            TFadjustedSr = null;
+            adjustmentScaleFactor = 1;
 
+            // Parse Values
+            if (TruncateMinTextBox.Text.Trim() != "" &&
+                !Double.TryParse(TruncateMinTextBox.Text, out truncateMin)) {
+                TruncateErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+            if (TruncateMaxTextBox.Text.Trim() != "" &&
+                !Double.TryParse(TruncateMaxTextBox.Text, out truncateMax)) {
+                TruncateErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+
+            if (ExtrapolateMaxTextBox.Text.Trim() != "" &&
+                !Double.TryParse(ExtrapolateMaxTextBox.Text, out extrapolateMax)) {
+                ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+            if (ExtrapolateMinTextBox.Text.Trim() != "" &&
+                !Double.TryParse(ExtrapolateMinTextBox.Text, out extrapolateMin)) {
+                ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+
+            if (!double.IsNaN(extrapolateMin) &&
+                TFminvalueTextbox.Text.Trim() != "" &&
+                !Double.TryParse(TFminvalueTextbox.Text, out TFMinVal)) {
+                forcedValsErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+
+            if (!double.IsNaN(extrapolateMax) &&
+                TFmaxvalueTextbox.Text.Trim() != "" &&
+                !Double.TryParse(TFmaxvalueTextbox.Text, out TFMaxVal)) {
+                forcedValsErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+
+            if (error) {
+                return;
+            }
+
+            // Truncation Setup
+            if (!Double.IsNaN(truncateMin)) {
+                var v = TFz.Find(x => (x + x * 1e-5 >= truncateMin));
+                if (v != null)
+                    mini = v.Item1;
+                else {
+                    TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
                 }
             }
-            if (TruncateMaxTextBox.Text.Trim() != "") {
-                if (!Double.TryParse(TruncateMaxTextBox.Text, out truncateMax)) {
-                    TruncateErrorLabel.Text = "<--- Parse error"; error = true;
-                }
-                else {
-                    var v = TFz.Find(x => (x-x*1e-5> truncateMax));
-                    if (v == null)
-                        maxi = TFz.Count -1;
-                    else if (v.Item1 == 0) {
-                        TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
-                    } else {
-                        maxi = v.Item1 - 1;
-                    }
+            if(!Double.IsNaN(truncateMax)) {
+                var v = TFz.Find(x => (x-x*1e-5> truncateMax));
+                if (v == null)
+                    maxi = TFz.Count -1;
+                else if (v.Item1 == 0) {
+                    TruncateErrorLabel.Text = "<--- No values remaining"; error = true;
+                } else {
+                    maxi = v.Item1 - 1;
                 }
             }
             if (!error && maxi < mini) {
@@ -212,30 +250,44 @@ namespace MRI_RF_TF_Tool {
                 TFadjustedSr = null;
                 return;
             }
+            // Truncate
             TFadjustedZ = TFz.SubVector(mini, maxi - mini + 1);
             TFadjustedSr = TFSr.SubVector(mini, maxi - mini + 1);
 
             // Extrapolation
-            if (ExtrapolateMaxTextBox.Text.Trim() != "") {
-                double extrapMax;
+            if (!double.IsNaN(extrapolateMax)) {
                 double currentMax = TFadjustedZ.Last();
                 if (TFz.Count < 3) {
                     ExtrapolateErrorLabel.Text = "<--- At least three datapoints required"; error = true;
-                } else if(!double.TryParse(ExtrapolateMaxTextBox.Text, out extrapMax)) {
-                    ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
-                } else if (extrapMax > currentMax) {
+                } else if (extrapolateMax > currentMax) {
                     double dx = TFadjustedZ[1] - TFadjustedZ[0];
-                    int numextra = 1 + (int)((extrapMax - currentMax)/dx);
+                    int numextra = 1 + (int)((extrapolateMax - currentMax)/dx);
                     if (numextra > 300) {
                         ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
                     }else {
+                        List<double> newx = new List<double>();
+                        double xi = TFadjustedZ.Last();
+                        while (xi - dx / 10 < extrapolateMax) {
+                            newx.Add(xi);
+                            xi = xi + dx;
+                        }
+                        newx.Add(extrapolateMax);
+
                         var mags = TFadjustedSr.Map(x => x.Magnitude);
                         var phases = TFadjustedSr.Map(x => x.Phase);
                         phases = phases.Unwrap();
+                        IEnumerable<double> z2 = TFadjustedZ;
+                        IEnumerable<double> mag2 = mags;
+                        // append extra finish point, if existing
+                        if(!double.IsNaN(TFMaxVal)) {
+                            z2 = z2.Concat(new double[] { extrapolateMax});
+                            mag2 = mag2.Concat(new double[] {TFMaxVal}) ;
+                        }
+                        // And interpolate!
                         try {
-                            var magspline = MakeInterpolator(TFadjustedZ, mags);
+                            var magspline = MakeInterpolator(z2, mag2); // use forced point, if any
                             var phasepline = MakeInterpolator(TFadjustedZ, phases);
-                            var newx = Vector<double>.Build.Dense(numextra, i => currentMax + dx * (1 + i));
+                            newx[numextra - 1] = extrapolateMax; // force last point to be the required point
                             var newy = newx.Select(x => Complex.FromPolarCoordinates(
                                 magspline(x), phasepline(x)));
                             TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(TFadjustedZ.Concat(newx));
@@ -249,29 +301,40 @@ namespace MRI_RF_TF_Tool {
                     }
                 }
             }
-            if (ExtrapolateMinTextBox.Text.Trim() != "") {
-                double extrapMin;
+            if(!double.IsNaN(extrapolateMin)) {
                 double currentMin = TFadjustedZ[0];
                 if (TFz.Count < 3) {
                     ExtrapolateErrorLabel.Text = "<--- At least three datapoints required"; error = true;
                 }
-                else if (!double.TryParse(ExtrapolateMinTextBox.Text, out extrapMin)) {
-                    ExtrapolateErrorLabel.Text = "<--- Parse error"; error = true;
-                }
-                else if (extrapMin < currentMin) {
+                else if (extrapolateMin < currentMin) {
                     double dx = TFadjustedZ[1] - TFadjustedZ[0];
-                    int numextra = 1 + (int)((currentMin - extrapMin) / dx);
+                    int numextra = 1 + (int)((currentMin - extrapolateMin) / dx);
                     if (numextra > 300) {
                         ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
                     }
                     else {
+                        List<double> newx = new List<double>();
+                        double xi = TFadjustedZ[0];
+                        while (xi + dx / 10 > extrapolateMin) {
+                            newx.Add(xi);
+                            xi = xi - dx;
+                        }
+                        newx.Add(extrapolateMin);
+                        newx.Reverse();
+
                         var mags = TFadjustedSr.Map(x => x.Magnitude);
                         var phases = TFadjustedSr.Map(x => x.Phase);
                         phases = phases.Unwrap();
+                        IEnumerable<double> z2 = TFadjustedZ;
+                        IEnumerable<double> mag2 = mags;
+                        // prepend extra finish point, if existing
+                        if (!double.IsNaN(TFMinVal)) {
+                            z2 = (new double[] { extrapolateMin }).Concat(z2);
+                            mag2 = (new double[] { TFMinVal }).Concat(mag2);
+                        }
                         try {
-                            var magspline = MakeInterpolator(TFadjustedZ, mags);
+                            var magspline = MakeInterpolator(z2, mag2);
                             var phasepline = MakeInterpolator(TFadjustedZ, phases);
-                            var newx = Vector<double>.Build.Dense(numextra, i => currentMin - dx * (numextra - i));
                             var newy = newx.Select(x => Complex.FromPolarCoordinates(
                                 magspline(x), phasepline(x)));
                             TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(newx.Concat(TFadjustedZ));
@@ -294,8 +357,10 @@ namespace MRI_RF_TF_Tool {
             // Normalization
             if (NormalizeCheckBox.Checked) {
                 double max = TFadjustedSr.AbsoluteMaximum().Magnitude;
-                if (max > 0)
+                if (max > 0) {
+                    adjustmentScaleFactor = 1 / max;
                     TFadjustedSr = TFadjustedSr.Divide(max);
+                }
             }
         }
         private void BrowseTFButton_Click(object sender, EventArgs e) {

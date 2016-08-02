@@ -51,13 +51,19 @@
             this.ExtrapolateMinTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ExtrapolateMaxTextBox = new System.Windows.Forms.TextBox();
-            this.SaveAsButton = new System.Windows.Forms.Button();
-            this.ExtrapolateErrorLabel = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.InterpolationModeComboBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.extrapolationPointsTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.ExtrapolateErrorLabel = new System.Windows.Forms.Label();
+            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.TFminvalueTextbox = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.TFmaxvalueTextbox = new System.Windows.Forms.TextBox();
+            this.SaveAsButton = new System.Windows.Forms.Button();
+            this.forcedValsErrorLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -67,6 +73,7 @@
             this.tableLayoutPanel4.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
+            this.flowLayoutPanel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -194,7 +201,7 @@
             this.VisualizationGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.VisualizationGroupbox.Location = new System.Drawing.Point(3, 86);
             this.VisualizationGroupbox.Name = "VisualizationGroupbox";
-            this.VisualizationGroupbox.Size = new System.Drawing.Size(680, 242);
+            this.VisualizationGroupbox.Size = new System.Drawing.Size(680, 210);
             this.VisualizationGroupbox.TabIndex = 1;
             this.VisualizationGroupbox.TabStop = false;
             this.VisualizationGroupbox.Text = "Visualization";
@@ -213,7 +220,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(674, 223);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(674, 191);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // MagGraphControl
@@ -230,7 +237,7 @@
             this.MagGraphControl.ScrollMinX = 0D;
             this.MagGraphControl.ScrollMinY = 0D;
             this.MagGraphControl.ScrollMinY2 = 0D;
-            this.MagGraphControl.Size = new System.Drawing.Size(668, 105);
+            this.MagGraphControl.Size = new System.Drawing.Size(668, 89);
             this.MagGraphControl.TabIndex = 0;
             this.MagGraphControl.UseExtendedPrintDialog = true;
             // 
@@ -239,7 +246,7 @@
             this.phaseGraphControl.AutoSize = true;
             this.phaseGraphControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.phaseGraphControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.phaseGraphControl.Location = new System.Drawing.Point(3, 114);
+            this.phaseGraphControl.Location = new System.Drawing.Point(3, 98);
             this.phaseGraphControl.Name = "phaseGraphControl";
             this.phaseGraphControl.ScrollGrace = 0D;
             this.phaseGraphControl.ScrollMaxX = 0D;
@@ -248,7 +255,7 @@
             this.phaseGraphControl.ScrollMinX = 0D;
             this.phaseGraphControl.ScrollMinY = 0D;
             this.phaseGraphControl.ScrollMinY2 = 0D;
-            this.phaseGraphControl.Size = new System.Drawing.Size(668, 106);
+            this.phaseGraphControl.Size = new System.Drawing.Size(668, 90);
             this.phaseGraphControl.TabIndex = 1;
             this.phaseGraphControl.UseExtendedPrintDialog = true;
             // 
@@ -258,9 +265,9 @@
             this.FilterGroupbox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.FilterGroupbox.Controls.Add(this.tableLayoutPanel4);
             this.FilterGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FilterGroupbox.Location = new System.Drawing.Point(3, 334);
+            this.FilterGroupbox.Location = new System.Drawing.Point(3, 302);
             this.FilterGroupbox.Name = "FilterGroupbox";
-            this.FilterGroupbox.Size = new System.Drawing.Size(680, 107);
+            this.FilterGroupbox.Size = new System.Drawing.Size(680, 139);
             this.FilterGroupbox.TabIndex = 2;
             this.FilterGroupbox.TabStop = false;
             this.FilterGroupbox.Text = "Filter";
@@ -272,16 +279,18 @@
             this.tableLayoutPanel4.ColumnCount = 1;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel1, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.NormalizeCheckBox, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.NormalizeCheckBox, 0, 3);
             this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel2, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.flowLayoutPanel3, 0, 2);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowCount = 4;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(674, 88);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(674, 120);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // flowLayoutPanel1
@@ -350,7 +359,7 @@
             // NormalizeCheckBox
             // 
             this.NormalizeCheckBox.AutoSize = true;
-            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 68);
+            this.NormalizeCheckBox.Location = new System.Drawing.Point(3, 100);
             this.NormalizeCheckBox.Name = "NormalizeCheckBox";
             this.NormalizeCheckBox.Size = new System.Drawing.Size(148, 17);
             this.NormalizeCheckBox.TabIndex = 1;
@@ -415,30 +424,6 @@
             this.ExtrapolateMaxTextBox.TabIndex = 6;
             this.ExtrapolateMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
-            // SaveAsButton
-            // 
-            this.SaveAsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveAsButton.AutoSize = true;
-            this.SaveAsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SaveAsButton.Location = new System.Drawing.Point(601, 447);
-            this.SaveAsButton.Name = "SaveAsButton";
-            this.SaveAsButton.Size = new System.Drawing.Size(82, 23);
-            this.SaveAsButton.TabIndex = 3;
-            this.SaveAsButton.Text = "Save TF As...";
-            this.SaveAsButton.UseVisualStyleBackColor = true;
-            this.SaveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
-            // 
-            // ExtrapolateErrorLabel
-            // 
-            this.ExtrapolateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ExtrapolateErrorLabel.AutoSize = true;
-            this.ExtrapolateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(524, 7);
-            this.ExtrapolateErrorLabel.Name = "ExtrapolateErrorLabel";
-            this.ExtrapolateErrorLabel.Size = new System.Drawing.Size(19, 13);
-            this.ExtrapolateErrorLabel.TabIndex = 7;
-            this.ExtrapolateErrorLabel.Text = "<--";
-            // 
             // label5
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -455,6 +440,7 @@
             this.InterpolationModeComboBox.Items.AddRange(new object[] {
             "linear fit",
             "quadratic fit",
+            "cubic fit",
             "parabolically terminated splines",
             "natural cubic splines (f\'\'=0)"});
             this.InterpolationModeComboBox.Location = new System.Drawing.Point(283, 3);
@@ -492,6 +478,92 @@
             this.label7.TabIndex = 12;
             this.label7.Text = "points.";
             // 
+            // ExtrapolateErrorLabel
+            // 
+            this.ExtrapolateErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ExtrapolateErrorLabel.AutoSize = true;
+            this.ExtrapolateErrorLabel.ForeColor = System.Drawing.Color.Crimson;
+            this.ExtrapolateErrorLabel.Location = new System.Drawing.Point(524, 7);
+            this.ExtrapolateErrorLabel.Name = "ExtrapolateErrorLabel";
+            this.ExtrapolateErrorLabel.Size = new System.Drawing.Size(19, 13);
+            this.ExtrapolateErrorLabel.TabIndex = 7;
+            this.ExtrapolateErrorLabel.Text = "<--";
+            // 
+            // flowLayoutPanel3
+            // 
+            this.flowLayoutPanel3.AutoSize = true;
+            this.flowLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowLayoutPanel3.Controls.Add(this.label8);
+            this.flowLayoutPanel3.Controls.Add(this.TFminvalueTextbox);
+            this.flowLayoutPanel3.Controls.Add(this.label9);
+            this.flowLayoutPanel3.Controls.Add(this.TFmaxvalueTextbox);
+            this.flowLayoutPanel3.Controls.Add(this.forcedValsErrorLabel);
+            this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 68);
+            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(668, 26);
+            this.flowLayoutPanel3.TabIndex = 4;
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 6);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(116, 13);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "     Forcing |TF(x_min)|=";
+            // 
+            // TFminvalueTextbox
+            // 
+            this.TFminvalueTextbox.Location = new System.Drawing.Point(125, 3);
+            this.TFminvalueTextbox.Name = "TFminvalueTextbox";
+            this.TFminvalueTextbox.Size = new System.Drawing.Size(43, 20);
+            this.TFminvalueTextbox.TabIndex = 7;
+            this.TFminvalueTextbox.TextChanged += new System.EventHandler(this.HangleTextChanged);
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(174, 6);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(93, 13);
+            this.label9.TabIndex = 8;
+            this.label9.Text = ", and |TF(x_max)|=";
+            // 
+            // TFmaxvalueTextbox
+            // 
+            this.TFmaxvalueTextbox.Location = new System.Drawing.Point(273, 3);
+            this.TFmaxvalueTextbox.Name = "TFmaxvalueTextbox";
+            this.TFmaxvalueTextbox.Size = new System.Drawing.Size(43, 20);
+            this.TFmaxvalueTextbox.TabIndex = 9;
+            this.TFmaxvalueTextbox.TextChanged += new System.EventHandler(this.HangleTextChanged);
+            // 
+            // SaveAsButton
+            // 
+            this.SaveAsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveAsButton.AutoSize = true;
+            this.SaveAsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.SaveAsButton.Location = new System.Drawing.Point(601, 447);
+            this.SaveAsButton.Name = "SaveAsButton";
+            this.SaveAsButton.Size = new System.Drawing.Size(82, 23);
+            this.SaveAsButton.TabIndex = 3;
+            this.SaveAsButton.Text = "Save TF As...";
+            this.SaveAsButton.UseVisualStyleBackColor = true;
+            this.SaveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
+            // 
+            // forcedValsErrorLabel
+            // 
+            this.forcedValsErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.forcedValsErrorLabel.AutoSize = true;
+            this.forcedValsErrorLabel.ForeColor = System.Drawing.Color.Crimson;
+            this.forcedValsErrorLabel.Location = new System.Drawing.Point(322, 6);
+            this.forcedValsErrorLabel.Name = "forcedValsErrorLabel";
+            this.forcedValsErrorLabel.Size = new System.Drawing.Size(19, 13);
+            this.forcedValsErrorLabel.TabIndex = 10;
+            this.forcedValsErrorLabel.Text = "<--";
+            // 
             // AdjustTFForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -518,6 +590,8 @@
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
+            this.flowLayoutPanel3.ResumeLayout(false);
+            this.flowLayoutPanel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -559,5 +633,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox extrapolationPointsTextBox;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox TFminvalueTextbox;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox TFmaxvalueTextbox;
+        private System.Windows.Forms.Label forcedValsErrorLabel;
     }
 }
