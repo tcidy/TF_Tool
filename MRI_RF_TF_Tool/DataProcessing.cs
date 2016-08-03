@@ -19,6 +19,11 @@ namespace MRI_RF_TF_Tool
 {
     class DataProcessing
     {
+        public static double Integrate(IEnumerable<double> x, IEnumerable<double> y) {
+            var spline = CubicSpline.InterpolateBoundaries(x, y,
+                SplineBoundaryCondition.ParabolicallyTerminated, 0, SplineBoundaryCondition.ParabolicallyTerminated, 0);
+            return spline.Integrate(x.Minimum(), x.Maximum());
+        }
         // This evaluates the SQUARED intergral of (S*Etan)
         public static double TFInt(
             Vector<Double> ETan_Z,

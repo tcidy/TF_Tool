@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -102,6 +103,42 @@ namespace MRI_RF_TF_Tool
         private void NormalizationRadioButton_CheckedChanged(object sender, EventArgs e) {
             if(((RadioButton)sender).Checked)
                 PopulateData();
+        }
+
+        private void SaveSummaryButton_click(object sender, EventArgs e) {
+            if (names.Count == 0) {
+                MessageBox.Show(this, "Cannot save summary without any files loaded", "Error saving", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "CSV (*.csv)|*.csv|All Files (*.*)|*.*";
+            if (sfd.ShowDialog() != DialogResult.OK) {
+                return;
+            }
+            try {
+                using (StreamWriter tw = new StreamWriter(sfd.FileName)) {
+                    string[] headers = new string[] {
+                    "TF Pathname", "name", "Zmin", "Zmax", "Integral(TF TF*)" };
+                    tw.WriteLine(String.Join(",", headers));
+                    for (int i = 0; i < names.Count; i++) {
+                        tw.WriteLine(String.Join(",", new string[] {
+                            names[i],
+                            Path.GetFileNameWithoutExtension(names[i]),
+                            ZList[i].Minimum().ToString(),
+                            ZList[i].Maximum().ToString(),
+                            DataProcessing.Integrate(
+                                ZList[i],
+                                SrList[i].Map(x => x.Magnitude).Map(x=> x*x)
+                            ).ToString()
+                        }));
+                    }
+                }
+            }
+            catch (IOException ex) {
+                MessageBox.Show(this, "An IO error happened during saving: " + Environment.NewLine + Environment.NewLine +
+                    ex.Message, "Error saving", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
     }
 }
