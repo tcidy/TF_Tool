@@ -64,6 +64,10 @@
             this.TFmaxvalueTextbox = new System.Windows.Forms.TextBox();
             this.SaveAsButton = new System.Windows.Forms.Button();
             this.forcedValsErrorLabel = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.TFPhaseMinTextBox = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.TFPhaseMaxTextBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -497,6 +501,10 @@
             this.flowLayoutPanel3.Controls.Add(this.TFminvalueTextbox);
             this.flowLayoutPanel3.Controls.Add(this.label9);
             this.flowLayoutPanel3.Controls.Add(this.TFmaxvalueTextbox);
+            this.flowLayoutPanel3.Controls.Add(this.label10);
+            this.flowLayoutPanel3.Controls.Add(this.TFPhaseMinTextBox);
+            this.flowLayoutPanel3.Controls.Add(this.label11);
+            this.flowLayoutPanel3.Controls.Add(this.TFPhaseMaxTextBox);
             this.flowLayoutPanel3.Controls.Add(this.forcedValsErrorLabel);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 68);
@@ -510,13 +518,13 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(3, 6);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(116, 13);
+            this.label8.Size = new System.Drawing.Size(119, 13);
             this.label8.TabIndex = 5;
-            this.label8.Text = "     Forcing |TF(x_min)|=";
+            this.label8.Text = "     Forcing: |TF(x_min)|=";
             // 
             // TFminvalueTextbox
             // 
-            this.TFminvalueTextbox.Location = new System.Drawing.Point(125, 3);
+            this.TFminvalueTextbox.Location = new System.Drawing.Point(128, 3);
             this.TFminvalueTextbox.Name = "TFminvalueTextbox";
             this.TFminvalueTextbox.Size = new System.Drawing.Size(43, 20);
             this.TFminvalueTextbox.TabIndex = 7;
@@ -526,15 +534,15 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(174, 6);
+            this.label9.Location = new System.Drawing.Point(177, 6);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(93, 13);
+            this.label9.Size = new System.Drawing.Size(72, 13);
             this.label9.TabIndex = 8;
-            this.label9.Text = ", and |TF(x_max)|=";
+            this.label9.Text = ", |TF(x_max)|=";
             // 
             // TFmaxvalueTextbox
             // 
-            this.TFmaxvalueTextbox.Location = new System.Drawing.Point(273, 3);
+            this.TFmaxvalueTextbox.Location = new System.Drawing.Point(255, 3);
             this.TFmaxvalueTextbox.Name = "TFmaxvalueTextbox";
             this.TFmaxvalueTextbox.Size = new System.Drawing.Size(43, 20);
             this.TFmaxvalueTextbox.TabIndex = 9;
@@ -558,11 +566,47 @@
             this.forcedValsErrorLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.forcedValsErrorLabel.AutoSize = true;
             this.forcedValsErrorLabel.ForeColor = System.Drawing.Color.Crimson;
-            this.forcedValsErrorLabel.Location = new System.Drawing.Point(322, 6);
+            this.forcedValsErrorLabel.Location = new System.Drawing.Point(592, 6);
             this.forcedValsErrorLabel.Name = "forcedValsErrorLabel";
             this.forcedValsErrorLabel.Size = new System.Drawing.Size(19, 13);
             this.forcedValsErrorLabel.TabIndex = 10;
             this.forcedValsErrorLabel.Text = "<--";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(304, 6);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(77, 13);
+            this.label10.TabIndex = 11;
+            this.label10.Text = ", θ(TF(x_min))=";
+            // 
+            // TFPhaseMinTextBox
+            // 
+            this.TFPhaseMinTextBox.Location = new System.Drawing.Point(387, 3);
+            this.TFPhaseMinTextBox.Name = "TFPhaseMinTextBox";
+            this.TFPhaseMinTextBox.Size = new System.Drawing.Size(43, 20);
+            this.TFPhaseMinTextBox.TabIndex = 12;
+            this.TFPhaseMinTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(436, 6);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(101, 13);
+            this.label11.TabIndex = 13;
+            this.label11.Text = ", and θ(TF(x_max))=";
+            // 
+            // TFPhaseMaxTextBox
+            // 
+            this.TFPhaseMaxTextBox.Location = new System.Drawing.Point(543, 3);
+            this.TFPhaseMaxTextBox.Name = "TFPhaseMaxTextBox";
+            this.TFPhaseMaxTextBox.Size = new System.Drawing.Size(43, 20);
+            this.TFPhaseMaxTextBox.TabIndex = 14;
+            this.TFPhaseMaxTextBox.TextChanged += new System.EventHandler(this.HangleTextChanged);
             // 
             // AdjustTFForm
             // 
@@ -639,5 +683,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox TFmaxvalueTextbox;
         private System.Windows.Forms.Label forcedValsErrorLabel;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox TFPhaseMinTextBox;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox TFPhaseMaxTextBox;
     }
 }

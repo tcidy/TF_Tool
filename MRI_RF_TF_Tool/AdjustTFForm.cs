@@ -178,6 +178,7 @@ namespace MRI_RF_TF_Tool {
             double truncateMax = double.NaN;
             double extrapolateMax = double.NaN, extrapolateMin = double.NaN;
             double TFMinVal = double.NaN, TFMaxVal = double.NaN;
+            double TFMinPhase = double.NaN, TFMaxPhase = double.NaN;
             TruncateErrorLabel.Text = "";
             ExtrapolateErrorLabel.Text = "";
             forcedValsErrorLabel.Text = "";
@@ -218,6 +219,17 @@ namespace MRI_RF_TF_Tool {
                 !Double.TryParse(TFmaxvalueTextbox.Text, out TFMaxVal)) {
                 forcedValsErrorLabel.Text = "<--- Parse error"; error = true;
             }
+            if (!double.IsNaN(extrapolateMin) &&
+               TFPhaseMinTextBox.Text.Trim() != "" &&
+               !Double.TryParse(TFPhaseMinTextBox.Text, out TFMinPhase)) {
+                forcedValsErrorLabel.Text = "<--- Parse error"; error = true;
+            }
+
+            if (!double.IsNaN(extrapolateMax) &&
+                TFPhaseMaxTextBox.Text.Trim() != "" &&
+                !Double.TryParse(TFPhaseMaxTextBox.Text, out TFMaxPhase)) {
+                forcedValsErrorLabel.Text = "<--- Parse error"; error = true;
+            }
 
             if (error) {
                 return;
@@ -250,9 +262,18 @@ namespace MRI_RF_TF_Tool {
                 TFadjustedSr = null;
                 return;
             }
+
+
             // Truncate
             TFadjustedZ = TFz.SubVector(mini, maxi - mini + 1);
             TFadjustedSr = TFSr.SubVector(mini, maxi - mini + 1);
+
+            // Must only unwrap once, and must be done before truncation to be consistant with the plotted reference phase
+            IEnumerable<double> phase = TFSr.Map(x => x.Phase).Unwrap();
+            phase = phase.Skip(mini).Take(maxi - mini + 1);
+            IEnumerable<double> phasez = TFadjustedZ;
+            IEnumerable<double> magz = TFadjustedZ;
+            IEnumerable<double> mag = TFadjustedSr.Map(x => x.Magnitude);
 
             // Extrapolation
             if (!double.IsNaN(extrapolateMax)) {
@@ -273,20 +294,21 @@ namespace MRI_RF_TF_Tool {
                         }
                         newx.Add(extrapolateMax);
 
-                        var mags = TFadjustedSr.Map(x => x.Magnitude);
-                        var phases = TFadjustedSr.Map(x => x.Phase);
-                        phases = phases.Unwrap();
-                        IEnumerable<double> z2 = TFadjustedZ;
-                        IEnumerable<double> mag2 = mags;
                         // append extra finish point, if existing
                         if(!double.IsNaN(TFMaxVal)) {
-                            z2 = z2.Concat(new double[] { extrapolateMax});
-                            mag2 = mag2.Concat(new double[] {TFMaxVal}) ;
+                            magz = magz.Concat(new double[] { extrapolateMax});
+                            mag = mag.Concat(new double[] {TFMaxVal}) ;
+                        }
+
+                        // append extra phase point
+                        if (!double.IsNaN(TFMaxPhase)) {
+                            phasez = phasez.Concat(new double[] { extrapolateMax });
+                            phase = phase.Concat(new double[] { TFMaxPhase });
                         }
                         // And interpolate!
                         try {
-                            var magspline = MakeInterpolator(z2, mag2); // use forced point, if any
-                            var phasepline = MakeInterpolator(TFadjustedZ, phases);
+                            var magspline = MakeInterpolator(magz, mag); // use forced point, if any
+                            var phasepline = MakeInterpolator(phasez, phase);
                             newx[numextra - 1] = extrapolateMax; // force last point to be the required point
                             var newy = newx.Select(x => Complex.FromPolarCoordinates(
                                 magspline(x), phasepline(x)));
@@ -321,20 +343,22 @@ namespace MRI_RF_TF_Tool {
                         }
                         newx.Add(extrapolateMin);
                         newx.Reverse();
-
-                        var mags = TFadjustedSr.Map(x => x.Magnitude);
-                        var phases = TFadjustedSr.Map(x => x.Phase);
-                        phases = phases.Unwrap();
-                        IEnumerable<double> z2 = TFadjustedZ;
-                        IEnumerable<double> mag2 = mags;
-                        // prepend extra finish point, if existing
+                        
+                        // append extra finish point, if existing
                         if (!double.IsNaN(TFMinVal)) {
-                            z2 = (new double[] { extrapolateMin }).Concat(z2);
-                            mag2 = (new double[] { TFMinVal }).Concat(mag2);
+                            magz = (new double[] { extrapolateMin }).Concat(magz);
+                            mag = (new double[] { TFMinVal }).Concat(mag);
                         }
+                        
+                        // append extra phase point
+                        if (!double.IsNaN(TFMinPhase)) {
+                            phasez = (new double[] { extrapolateMin }).Concat(phasez);
+                            phase = (new double[] { TFMinPhase }).Concat(phase);
+                        }
+                        
                         try {
-                            var magspline = MakeInterpolator(z2, mag2);
-                            var phasepline = MakeInterpolator(TFadjustedZ, phases);
+                            var magspline = MakeInterpolator(magz, mag);
+                            var phasepline = MakeInterpolator(phasez, phase);
                             var newy = newx.Select(x => Complex.FromPolarCoordinates(
                                 magspline(x), phasepline(x)));
                             TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(newx.Concat(TFadjustedZ));
