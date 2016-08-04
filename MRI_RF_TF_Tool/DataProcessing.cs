@@ -83,9 +83,10 @@ namespace MRI_RF_TF_Tool
             {
                 string[] headers = new string[] {
                     "" /* line number */,
-                    "File Name", "Date", "Measurement Pathway", "Lead State",
-                    "Lead Type", "Odd Channel", "Odd Channel Voltage", "Even Channel",
-                    "Even Channel Voltage" };
+                    //"File Name", "Date", "Measurement Pathway", "Lead State",
+                    //"Lead Type", "Odd Channel", "Odd Channel Voltage", "Even Channel",
+                    //"Even Channel Voltage" };
+                        "File Name", "Voltage 1", "Voltage 2" };
                 tw.WriteLine(String.Join(",", headers));
                 int i = 0;
                 foreach (string fn in infiles)
@@ -93,12 +94,12 @@ namespace MRI_RF_TF_Tool
                     StreamReader sr = new StreamReader(fn);
                     string namepart = Path.GetFileNameWithoutExtension(fn);
                     string line;
-                    Regex fn_re = new Regex(
+                   /* Regex fn_re = new Regex(
                         @"^(?<date>[0-9\-]+)_CH(?<ch1num>[0-9]*)-(?<ch2num>[0-9]*)_(?<label>[a-zA-Z0-9]+)_(?<lead_state>[a-zA-Z0-9]+)_(?<lead_path>[a-zA-Z0-9]+)");
                     Match m = fn_re.Match(namepart);
-
-                    if (!m.Success)
-                        throw new FormatException("Filename is not in the proper format: " + fn);
+                   */
+                    //if (!m.Success)
+                    //    throw new FormatException("Filename is not in the proper format: " + fn);
 
                     double oddvoltage, evenvoltage;
                     do
@@ -117,14 +118,14 @@ namespace MRI_RF_TF_Tool
                     var lineparts = new string[]
                     {
                         i.ToString(), // line number
-                        fn, // filename
-                        m.Groups["date"].Value,
-                        m.Groups["lead_path"].Value,
-                        m.Groups["lead_state"].Value,
-                        "CH" + m.Groups["ch1num"].Value + "-" + m.Groups["ch2num"].Value,
-                        "CH" + m.Groups["ch1num"].Value,
+                        Path.GetFileName(fn), // filename
+                        //m.Groups["date"].Value,
+                        //m.Groups["lead_path"].Value,
+                        //m.Groups["lead_state"].Value,
+                       // "CH" + m.Groups["ch1num"].Value + "-" + m.Groups["ch2num"].Value,
+                        //"CH" + m.Groups["ch1num"].Value,
                         oddvoltage.ToString(),
-                        m.Groups["ch2num"].Value,
+                        //m.Groups["ch2num"].Value,
                         evenvoltage.ToString()
                     };
                     tw.WriteLine(
