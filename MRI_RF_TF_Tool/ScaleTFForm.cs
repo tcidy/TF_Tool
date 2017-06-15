@@ -148,8 +148,8 @@ namespace MRI_RF_TF_Tool {
             else {
                 for (int i = 0; i < ETanFilesListBox.Items.Count; i++) {
                     ETan x = (ETan)ETanFilesListBox.Items[i];
-                    MeasSummary.SummaryRow row =
-                        meassum.rows.Find(r => r.Pathway.ToLowerInvariant() == x.PathWay.ToLowerInvariant());
+                    List<MeasSummary.SummaryRow> row =
+                        meassum.rows.FindAll(r => r.Pathway.ToLowerInvariant() == x.PathWay.ToLowerInvariant());
                     if (row != x.summrow) {
                         x.summrow = row;
                         ETanFilesListBox.Items[i] = x;
@@ -167,36 +167,41 @@ namespace MRI_RF_TF_Tool {
             List<double> measuredVals = new List<double>();
             List<double> predictedVals = new List<double>();
             foreach(ETan etanRow in ETanFilesListBox.Items) {
-                if (etanRow.summrow == null ||
-                    (VoltageMode && Double.IsNaN(etanRow.summrow.PeakHeaderVoltage)) ||
-                    (!VoltageMode && Double.IsNaN(etanRow.summrow.MeasuredTemperature))
-                    ) {
-                    numSkipped++;
-                    continue;
+                foreach(MeasSummary.SummaryRow sumrow in etanRow.summrow)
+                {
+                    if (etanRow.summrow == null ||
+                    (VoltageMode && Double.IsNaN(sumrow.PeakHeaderVoltage)) ||
+                    (!VoltageMode && Double.IsNaN(sumrow.MeasuredTemperature))
+                    )
+                    {
+                        numSkipped++;
+                        continue;
+                    }
+                    var scaledEtanRms = etanRow.rms.Multiply(sumrow.ETanScalingFactor);
+                    if (sumrow.Conjugate)
+                        scaledEtanRms = scaledEtanRms.Conjugate();
+
+                    if (VoltageMode && !Double.IsNaN(sumrow.CrestFactor))
+                        scaledEtanRms = scaledEtanRms.Multiply(sumrow.CrestFactor);
+
+                    double Z = DataProcessing.TFInt(
+                        ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
+                        TF_Z: TFz, TF_Sr: TFSr);
+
+                    if (VoltageMode)
+                        Z = Math.Sqrt(Z);
+
+                    ETans.Add(etanRow);
+                    double measuredVal;
+                    if (VoltageMode)
+                        measuredVal = sumrow.PeakHeaderVoltage;
+                    else
+                        measuredVal = sumrow.MeasuredTemperature;
+                    measuredVals.Add(measuredVal);
+                    predictedVals.Add(Z);
+                    numValid++;
                 }
-                var scaledEtanRms = etanRow.rms.Multiply(etanRow.summrow.ETanScalingFactor);
-                if (etanRow.summrow.Conjugate)
-                    scaledEtanRms = scaledEtanRms.Conjugate();
-
-                if (VoltageMode && !Double.IsNaN(etanRow.summrow.CrestFactor))
-                    scaledEtanRms = scaledEtanRms.Multiply(etanRow.summrow.CrestFactor);
-
-                double Z = DataProcessing.TFInt(
-                    ETan_Z: etanRow.z, ETan_RMS: scaledEtanRms,
-                    TF_Z: TFz, TF_Sr: TFSr);
-
-                if (VoltageMode)
-                    Z = Math.Sqrt(Z);
-
-                ETans.Add(etanRow);
-                double measuredVal;
-                if (VoltageMode)
-                    measuredVal = etanRow.summrow.PeakHeaderVoltage;
-                else
-                    measuredVal = etanRow.summrow.MeasuredTemperature;
-                measuredVals.Add(measuredVal);
-                predictedVals.Add(Z);
-                numValid++;
+                
             }
 
             if (numValid == 0) {
@@ -212,11 +217,13 @@ namespace MRI_RF_TF_Tool {
             }
             double scaleFactor;
             // TODO: Are these two things reversed? I need another person to double-check.
-            var A = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
-            var B = CreateVector.DenseOfEnumerable(predictedVals);
+            //var A = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { measuredVals });
+            //var B = CreateVector.DenseOfEnumerable(predictedVals);
+            var A = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { predictedVals });
+            var B = CreateVector.DenseOfEnumerable(measuredVals);
 
             var X = A.QR().Solve(B); // A*X = B
-            scaleFactor = X[0];
+            scaleFactor = 1.0/X[0];
             double TFScaleFactor = VoltageMode ? scaleFactor : Math.Sqrt(scaleFactor); // Scalefactor used for scaling the TF
             // Save things
             SaveScaledTF(TFScaleFactor);
@@ -231,6 +238,7 @@ namespace MRI_RF_TF_Tool {
                 title: TransferFunctionFilenameLabel.Text
                 );
             tffpf.AddFit(1.0/scaleFactor, 0,Color.Red);
+           
             tffpf.Show(this);
         }
         protected void SaveSummaryTable(
@@ -258,17 +266,22 @@ namespace MRI_RF_TF_Tool {
                 using (var sw = new StreamWriter(sfd.OpenFile())) {
                     int i = 0;
                     sw.WriteLineAsync(String.Join(",", headers));
-                    foreach (var row in etanRows.Zip(predictedVals)) {
-                        sw.WriteLineAsync(String.Join(",", new string[] {
+                    foreach (var row in etanRows.Zip(predictedVals))
+                    {
+                        foreach(MeasSummary.SummaryRow sumrow in row.Item1.summrow)
+                        {
+                            sw.WriteLineAsync(String.Join(",", new string[] {
                             i.ToString(),
                             row.Item1.PathWay,
                             row.Item2.ToString(),
                             (row.Item2/scaleFactor).ToString(),
-                            (VoltageMode? row.Item1.summrow.PeakHeaderVoltage : row.Item1.summrow.MeasuredTemperature).ToString(),
-                            row.Item1.summrow.ETanScalingFactor.ToString(),
+                            (VoltageMode? sumrow.PeakHeaderVoltage : sumrow.MeasuredTemperature).ToString(),
+                            sumrow.ETanScalingFactor.ToString(),
                             scaleFactor.ToString()
                         }));
-                        i++;
+                            i++;
+                        }
+                        
                     }
                 }
             } else {
@@ -284,17 +297,21 @@ namespace MRI_RF_TF_Tool {
                         ws.Cells[1, i + 1].Style.Font.Bold = true;
                     }
                     for (int i = 0; i < etanRows.Count; i++) {
-                        ws.Cells[i + 2, 1].Value = i; // iterator
-                        ws.Cells[i + 2, 1].Style.Font.Bold = true;
-                        ws.Cells[i + 2, 2].Value = etanRows[i].PathWay;
+                        foreach(MeasSummary.SummaryRow sumrow in etanRows[i].summrow)
+                        {
+                            ws.Cells[i + 2, 1].Value = i; // iterator
+                            ws.Cells[i + 2, 1].Style.Font.Bold = true;
+                            ws.Cells[i + 2, 2].Value = etanRows[i].PathWay;
 
-                        ws.Cells[i + 2, 3].Value = predictedVals[i];
-                        ws.Cells[i + 2, 4].Value = predictedVals[i]/scaleFactor;
-                        ws.Cells[i + 2, 5].Value = VoltageMode ?
-                            etanRows[i].summrow.PeakHeaderVoltage :
-                            etanRows[i].summrow.MeasuredTemperature;
-                        ws.Cells[i + 2, 6].Value = etanRows[i].summrow.ETanScalingFactor;
-                        ws.Cells[i + 2, 7].Value = scaleFactor;
+                            ws.Cells[i + 2, 3].Value = predictedVals[i];
+                            ws.Cells[i + 2, 4].Value = predictedVals[i] / scaleFactor;
+                            ws.Cells[i + 2, 5].Value = VoltageMode ?
+                                sumrow.PeakHeaderVoltage :
+                                sumrow.MeasuredTemperature;
+                            ws.Cells[i + 2, 6].Value = sumrow.ETanScalingFactor;
+                            ws.Cells[i + 2, 7].Value = scaleFactor;
+                        }
+                        
                     }
                     ws.Cells[ws.Dimension.Address].AutoFitColumns();
                     package.SaveAs(newFile);

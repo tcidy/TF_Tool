@@ -66,7 +66,7 @@ namespace MRI_RF_TF_Tool {
         Vector<double> Bkgz;
         Vector<Complex> BkgSr;
         string BkgFilename;
-        private void AddTFToGps(Vector<double> z, Vector<Complex> sr,
+        private void AddTFToGps(Vector<double> z, Vector<Complex> sr,double begin,
             string name, Color color, SymbolType symbol = SymbolType.None, bool drawLine = true,
             double scaleFactor = 1.0, System.Drawing.Drawing2D.DashStyle style =
             System.Drawing.Drawing2D.DashStyle.Solid) {
@@ -77,6 +77,32 @@ namespace MRI_RF_TF_Tool {
             srmag = srmag.Multiply(scaleFactor);
             var srphase = sr.Map(c => c.Phase);
             srphase = srphase.Unwrap();
+            double truncateMin = double.NaN;
+            if (TruncateMinTextBox.Text.Trim() != "" &&
+                !Double.TryParse(TruncateMinTextBox.Text, out truncateMin))
+            {
+                TruncateErrorLabel.Text = "<--- Parse error";
+            }
+            int mini = 0;
+            if (!Double.IsNaN(truncateMin))
+            {
+                var v = TFz.Find(x => (x + x * 1e-5 >= truncateMin));
+                if (v != null)
+                    mini = v.Item1;
+                else
+                {
+                    TruncateErrorLabel.Text = "<--- No values remaining";
+                }
+            }
+
+            while (srphase[mini] < 0)
+            {
+                srphase=srphase.Add(3.1416);
+            }
+                
+            while (srphase[mini] > 3.1416)
+                srphase=srphase.Subtract(3.1416);
+                
             PointPairList pplmag = new PointPairList(
                 z.ToArray(),
                 srmag.ToArray()
@@ -112,20 +138,29 @@ namespace MRI_RF_TF_Tool {
 
             var magGP = MagGraphControl.GraphPane;
             var phaseGP = phaseGraphControl.GraphPane;
+            double begin;
+            if (double.TryParse(TruncateMinTextBox.Text, out begin))
+            {
+                //parsing successful 
+            }
+            else
+            {
+                //parsing failed. 
+            }
             magGP.CurveList.Clear();
             phaseGP.CurveList.Clear();
             string normStr = "";
             if (NormalizeCheckBox.Checked)
                 normStr = " (normalized)";
             if(Bkgz != null && BkgSr != null)
-                AddTFToGps(Bkgz, BkgSr, "Reference" + normStr, Color.Gray, SymbolType.None, drawLine: true,
+                AddTFToGps(Bkgz, BkgSr,begin, "Reference" + normStr, Color.Gray, SymbolType.None, drawLine: true,
                     scaleFactor: bkgScaleFactor, style: System.Drawing.Drawing2D.DashStyle.Dash);
             if (TFz != null && TFSr != null) {
-                AddTFToGps(TFz, TFSr, "TF" + normStr, Color.Blue, SymbolType.XCross, drawLine: false,
+                AddTFToGps(TFz, TFSr,begin, "TF" + normStr, Color.Blue, SymbolType.XCross, drawLine: false,
                     scaleFactor: adjustmentScaleFactor);
             }
             if (TFadjustedZ != null && TFadjustedSr != null) {
-                AddTFToGps(TFadjustedZ, TFadjustedSr, "Adjusted TF",
+                AddTFToGps(TFadjustedZ, TFadjustedSr, begin, "Adjusted TF",
                     color: Color.Black, symbol: SymbolType.XCross, drawLine: true);
             }
 
@@ -139,9 +174,9 @@ namespace MRI_RF_TF_Tool {
             SplineBoundaryCondition bc;
             int xlength = x.Count();
             int mode = InterpolationModeComboBox.SelectedIndex;
-            if (mode == 0 || mode == 1 || mode == 2) {
+            if (mode == 0 || mode == 1) {
                 int order;
-                order = mode + 1; // linear => 1; quadratic => 2; cubic => 3
+                order = mode*2 + 1; // linear => 1; cubic => 3
                 int npoints;
                 if (!int.TryParse(extrapolationPointsTextBox.Text, out npoints))
                     throw new Exception("Cannot parse number of points");
@@ -161,7 +196,7 @@ namespace MRI_RF_TF_Tool {
                 IInterpolation I = LinearSpline.Interpolate(x, y);
                 return (x2 => I.Interpolate(x2));
             } else {
-                if (InterpolationModeComboBox.SelectedIndex == 2)
+                if (InterpolationModeComboBox.SelectedIndex == 1)
                     bc = SplineBoundaryCondition.ParabolicallyTerminated;
                 else
                     bc = SplineBoundaryCondition.Natural;
@@ -282,17 +317,17 @@ namespace MRI_RF_TF_Tool {
                     ExtrapolateErrorLabel.Text = "<--- At least three datapoints required"; error = true;
                 } else if (extrapolateMax > currentMax) {
                     double dx = TFadjustedZ[1] - TFadjustedZ[0];
-                    int numextra = 1 + (int)((extrapolateMax - currentMax)/dx);
+                    int numextra = (int)((extrapolateMax - currentMax)/dx);
                     if (numextra > 300) {
                         ExtrapolateErrorLabel.Text = "<--- Only 300 points may be extrapolated"; error = true;
                     }else {
                         List<double> newx = new List<double>();
-                        double xi = TFadjustedZ.Last();
+                        double xi = TFadjustedZ.Last()+dx;
                         while (xi - dx / 10 < extrapolateMax) {
                             newx.Add(xi);
                             xi = xi + dx;
                         }
-                        newx.Add(extrapolateMax);
+                        //newx.Add(extrapolateMax);
 
                         // append extra finish point, if existing
                         if(!double.IsNaN(TFMaxVal)) {
@@ -309,7 +344,7 @@ namespace MRI_RF_TF_Tool {
                         try {
                             var magspline = MakeInterpolator(magz, mag); // use forced point, if any
                             var phasepline = MakeInterpolator(phasez, phase);
-                            newx[numextra - 1] = extrapolateMax; // force last point to be the required point
+                            //newx[numextra - 1] = extrapolateMax; // force last point to be the required point
                             var newy = newx.Select(x => Complex.FromPolarCoordinates(
                                 magspline(x), phasepline(x)));
                             TFadjustedZ = Vector<double>.Build.DenseOfEnumerable(TFadjustedZ.Concat(newx));
@@ -336,12 +371,12 @@ namespace MRI_RF_TF_Tool {
                     }
                     else {
                         List<double> newx = new List<double>();
-                        double xi = TFadjustedZ[0];
+                        double xi = TFadjustedZ[0]-dx;
                         while (xi + dx / 10 > extrapolateMin) {
                             newx.Add(xi);
                             xi = xi - dx;
-                        }
-                        newx.Add(extrapolateMin);
+                            }
+                        //newx.Add(extrapolateMin);
                         newx.Reverse();
                         
                         // append extra finish point, if existing
@@ -372,7 +407,7 @@ namespace MRI_RF_TF_Tool {
                         }
                      }
                 }
-            }
+           }
             if (error) {
                 TFadjustedZ = null;
                 TFadjustedSr = null;
@@ -460,7 +495,8 @@ namespace MRI_RF_TF_Tool {
                 return;
 
             var Z = CreateMatrix.DenseOfColumns(new IEnumerable<double>[] { TFadjustedZ });
-            var Sr = CreateMatrix.DenseOfColumnVectors(new Vector<Complex>[] { TFadjustedSr });
+            //var Sr = CreateMatrix.DenseOfColumnVectors(new Vector<Complex>[] { TFadjustedSr });
+            var Sr = CreateMatrix.DenseOfColumns(new Vector<Complex>[] { TFadjustedSr });
 
             var matrices = new List<MatlabMatrix>();
             matrices.Add(MatlabWriter.Pack(Z, "z"));

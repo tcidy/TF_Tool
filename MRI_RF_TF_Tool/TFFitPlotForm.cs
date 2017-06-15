@@ -31,7 +31,8 @@ namespace MRI_RF_TF_Tool {
         }
         public void AddFit(double m, double b, Color color) {
             var gp = fitPlotGraphControl.GraphPane;
-            var xmin = gp.XAxis.Scale.Min;
+            //var xmin = gp.XAxis.Scale.Min;
+            var xmin = 0;
             var xmax = gp.XAxis.Scale.Max;
             gp.AddCurve("",
                 new double[] { xmin,  xmax},

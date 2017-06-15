@@ -14,7 +14,7 @@ namespace MRI_RF_TF_Tool {
         public string name;
         public Vector<double> z;
         public Vector<Complex> rms;
-        public MeasSummary.SummaryRow summrow = null;
+        public List<MeasSummary.SummaryRow> summrow = null;
         public ETan() {
 
         }
@@ -36,10 +36,11 @@ namespace MRI_RF_TF_Tool {
             name = System.IO.Path.GetFileName(filename);
         }
         public override string ToString() {
-            return name + "(" + (
+
+            return name+"(" + (
                     (summrow == null) ? 
                     ( PathWay ) :
-                    (summrow.ToString())
+                    (((summrow.Count>1)?"["+summrow.Count.ToString()+"]":"")+summrow[0].ToString())
                 ) + ")";
         }
     }

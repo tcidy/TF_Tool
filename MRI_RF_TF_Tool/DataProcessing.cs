@@ -14,6 +14,8 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.Data.Text;
 using MathNet.Numerics.Data.Matlab;
 using MathNet.Numerics.Statistics;
+using System.Windows.Forms;
+using Excel;
 
 namespace MRI_RF_TF_Tool
 {
@@ -77,6 +79,56 @@ namespace MRI_RF_TF_Tool
             double dT = sum.MagnitudeSquared();
             return dT;
         }
+        public static void ProcessHeaderToolVoltage(string[] infiles, string outfile)
+        {
+            using (StreamWriter tw = new StreamWriter(outfile))
+            {
+                string[] channel = new string[] { "", "File Name","ARing", "LVRing3", "SVC", "LVRing2", "RV", "ATip", "RVRing", "LVRing1", "RVTip", "LVTip" };
+                //string[] headers = new string[] { "", "File Name" };
+                tw.WriteLine(String.Join(",", channel));
+                int i = 0;
+                foreach (string fn in infiles)
+                {
+                    
+                    Stream sr = File.OpenRead(fn);
+                    IExcelDataReader excelReader;
+                    if (fn.EndsWith(".xls"))
+                    {
+                        excelReader = ExcelReaderFactory.CreateBinaryReader(sr);
+                    }
+                    else
+                    {
+                        excelReader = ExcelReaderFactory.CreateOpenXmlReader(sr);
+                    }
+                    var data = excelReader.AsDataSet();
+                    var table = data.Tables[0];
+                    int rrow = 0;
+                    do rrow++;
+                    while (table.Rows[rrow].ItemArray[0].ToString() != "Channel");
+                    rrow++;
+                    string[] maxvp = new string[10];
+                    while (rrow < table.Rows.Count)
+                    {
+                        var HVRow = table.Rows[rrow];
+                        int index = Array.IndexOf(channel, HVRow.ItemArray[0])-2;
+                        var voltage = HVRow.ItemArray[1];
+                        maxvp[index] = Convert.ToString(voltage);
+                        rrow++;
+                    }
+                    var lineparts = new string[]
+                    {
+                        i.ToString(), // line number
+                        Path.GetFileName(fn), // filename
+                    };
+                    lineparts = lineparts.Concat(maxvp).ToArray();
+                    tw.WriteLine(
+                       String.Join(",", lineparts)
+                       );
+                    i++;
+                    ;
+                }
+            }
+        } 
         public static void ProcessNeuroHeaderVoltage(string[] infiles, string outfile)
         {
             using (StreamWriter tw = new StreamWriter(outfile))
@@ -200,21 +252,22 @@ namespace MRI_RF_TF_Tool
         {
             using (StreamWriter tw = new StreamWriter(outfile))
             {
-                string[] headers = new string[] {
-                    "" /* line number */,
-                    "Filename",
-                    String.Join(",",
-                        Enumerable.Range(1,20).Select(x => "Probe " + x.ToString())
-                    )};
-                tw.WriteLine(String.Join(",", headers));
+                
                 int i = 0;
                 foreach (string fn in infiles)
                 {
                     StreamReader sr = new StreamReader(fn);
                     string namepart = Path.GetFileName(fn);
                     string line;
-                    List<double>[] values = new List<double>[20];
-                    for (int j = 0; j < 20; j++)
+                    int number_channels;
+                    do
+                    {
+                        line = sr.ReadLine();
+                    } while (line != null && !line.StartsWith("Total Channels", StringComparison.InvariantCultureIgnoreCase));
+                    string[] line_break = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    number_channels = Int32.Parse(line_break[1]);
+                    List<double>[] values = new List<double>[number_channels];
+                    for (int j = 0; j < number_channels; j++)
                         values[j] = new List<double>();
                     do
                     {
@@ -231,9 +284,9 @@ namespace MRI_RF_TF_Tool
                         if (line == "")
                             continue;
                         string[] parts = line.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts.Length != 42)
+                        if (parts.Length != 2*(number_channels+1))
                             throw new FormatException("Wrong number of element in data row of: " + fn);
-                        for (int j = 1; j <= 20; j++) // skip first element
+                        for (int j = 1; j <= number_channels; j++) // skip first element
                             values[j - 1].Add(Double.Parse(parts[j * 2]));
 
                     };
@@ -243,14 +296,32 @@ namespace MRI_RF_TF_Tool
                         v => v.GetRange(0, 30).Mean()
                       ).ToArray();
 
-                    int start_elem_ix = values[0].Skip(30).ToList().FindIndex(x => x > startvals[0] + 0.2) + 30; // Ignore the first 30 elements
+                    //int start_elem_ix = values[0].Skip(30).ToList().FindIndex(x => x > startvals[0] + 0.2) + 30; // Ignore the first 30 elements
+                    int start_elem_ix = -1;
+
+                    for (int j = 0; j < number_channels; j++)
+                    {
+                        int ix2 = values[j].FindIndex(x => x > startvals[j] + 0.3);
+                        if (ix2 >= 30 && (start_elem_ix == -1 || start_elem_ix > ix2))
+                            start_elem_ix = ix2;
+                    }
                     if (start_elem_ix == -1)
-                        throw new FormatException("Start element was found to be invalid, ix=" +
+                    {
+                        MessageBox.Show("Start element was found to be invalid [<=10 || not found], ix=" +
                             start_elem_ix.ToString() + ", in file " +
                             fn);
+                        continue;
+                    }
+                        //throw new FormatException("Start element was found to be invalid, ix=" +
+                        //    start_elem_ix.ToString() + ", in file " +
+                        //    fn);
                     int end_elem_ix = start_elem_ix + ((int)interval);
-                    if(end_elem_ix >= values[0].Count)
-                        throw new FormatException("In file " + fn + ", the RF pulse start + interval position was past the end of the data");
+                    if (end_elem_ix >= values[0].Count)
+                    {
+                        MessageBox.Show("In file " + fn + ", the RF pulse start + interval position was past the end of the data");
+                        continue;
+                    }
+                        //throw new FormatException("In file " + fn + ", the RF pulse start + interval position was past the end of the data");
                     var endvals = values.Select(
                         v => v.GetRange(end_elem_ix - 10, 10).Mean()
                       ).ToArray();
@@ -261,6 +332,14 @@ namespace MRI_RF_TF_Tool
                         namepart, // filename
                         String.Join(",",deltaT.Select(x => x.ToString()))
                     };
+                    string[] headers = new string[] {
+                    "" /* line number */,
+                    "Filename",
+                    String.Join(",",
+                        Enumerable.Range(1,number_channels).Select(x => "Probe " + x.ToString())
+                    )};
+                    if(i==0)
+                        tw.WriteLine(String.Join(",", headers));
                     tw.WriteLine(
                        String.Join(",", lineparts)
                        );
@@ -331,13 +410,23 @@ namespace MRI_RF_TF_Tool
                     for (int j = 0; j < 4; j++)
                     {
                         int ix2 = values[j].FindIndex(x => x > startvals[j] + 0.2);
-                        if (ix2 >= 0 && (start_elem_ix == -1 || start_elem_ix > ix2))
-                            start_elem_ix = ix2;
+                        
+                        if (ix2 < values[j].Count)
+                        {
+                            if (ix2 >= 0 && (start_elem_ix == -1 || start_elem_ix > ix2) && values[j][ix2 + 1] > values[j][ix2] + 0.2)
+                                start_elem_ix = ix2;
+                        }
                     }
                     if (start_elem_ix < 6 || start_elem_ix == -1)
-                        throw new FormatException("Start element was found to be invalid [<=10 || not found], ix=" +
+                    {
+                        MessageBox.Show("Start element was found to be invalid [<=10 || not found], ix=" +
                             start_elem_ix.ToString() + ", in file " +
                             fn);
+                        continue;
+                    }
+                        //throw new FormatException("Start element was found to be invalid [<=10 || not found], ix=" +
+                        //    start_elem_ix.ToString() + ", in file " +
+                        //    fn);
                     int end_elem_ix = start_elem_ix + ((int)interval);
                     var endvals = values.Select(
                         v => v.GetRange(end_elem_ix - 10, 10).Mean()

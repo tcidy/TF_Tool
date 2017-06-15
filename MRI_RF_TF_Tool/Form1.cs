@@ -62,19 +62,24 @@ namespace MRI_RF_TF_Tool
             ofd.Title = "Select input data files...";
             ofd.Multiselect = true;
             double interval = 0.0;
-            if (TemperatureModeRadioButton.Checked) {
-                if (!Double.TryParse(TempMeasIntervalTextBox.Text, out interval))
-                {
-                    MessageBox.Show(this, "The entered time interval is not a valid number.",
-                        "Data Processing Error");
-                    return;
-                }
-            }
-            if (VoltageModeRadioButton.Checked && CRMRadioButton.Checked)
-                ofd.Filter = "Text (*.txt)|*.txt|All Files (*.*)|*.*";
+            if (HeaderToolRadioButton.Checked)
+                ofd.Filter = "Excel Files (*.xls, *.xlsx)|*.xls;*.xlsx|All Files (*.*)|*.*";
             else
-                ofd.Filter = "CSV (*.csv)|*.csv|All Files (*.*)|*.*";
-
+            {
+                if (TemperatureModeRadioButton.Checked)
+                {
+                    if (!Double.TryParse(TempMeasIntervalTextBox.Text, out interval))
+                    {
+                        MessageBox.Show(this, "The entered time interval is not a valid number.",
+                            "Data Processing Error");
+                        return;
+                    }
+                }
+                if (VoltageModeRadioButton.Checked && CRMRadioButton.Checked)
+                    ofd.Filter = "Text (*.txt)|*.txt|All Files (*.*)|*.*";
+                else
+                    ofd.Filter = "CSV (*.csv)|*.csv|All Files (*.*)|*.*";
+            }
             if (ofd.ShowDialog() != DialogResult.OK)
             {
                 return;
@@ -89,24 +94,31 @@ namespace MRI_RF_TF_Tool
             }
             try
             {
-                if (VoltageModeRadioButton.Checked)
-                {
-                    if (NeuroRadioButton.Checked)
-                        DataProcessing.ProcessNeuroHeaderVoltage(ofd.FileNames, sfd.FileName);
-                    else
-                        DataProcessing.ProcessCRMHeaderVoltage(ofd.FileNames, sfd.FileName);
-                } else
-                {
-                    if (NeuroRadioButton.Checked)
-                    { // Neuro Temp Data
-                        DataProcessing.ProcessNeuroTempData(ofd.FileNames, sfd.FileName,interval,
-                            doPlots: DoDataProcessingPlotsCheckBox.Checked );
-                    } else
+                if (HeaderToolRadioButton.Checked)
+                    DataProcessing.ProcessHeaderToolVoltage(ofd.FileNames, sfd.FileName);
+                else {
+                    if (VoltageModeRadioButton.Checked)
                     {
-                        DataProcessing.ProcessCRMTempData(ofd.FileNames, sfd.FileName, interval,
-                            doPlots: DoDataProcessingPlotsCheckBox.Checked);
+                        if (NeuroRadioButton.Checked)
+                            DataProcessing.ProcessNeuroHeaderVoltage(ofd.FileNames, sfd.FileName);
+                        else
+                            DataProcessing.ProcessCRMHeaderVoltage(ofd.FileNames, sfd.FileName);
+                    }
+                    else
+                    {
+                        if (NeuroRadioButton.Checked)
+                        { // Neuro Temp Data
+                            DataProcessing.ProcessNeuroTempData(ofd.FileNames, sfd.FileName, interval,
+                                doPlots: DoDataProcessingPlotsCheckBox.Checked);
+                        }
+                        else
+                        {
+                            DataProcessing.ProcessCRMTempData(ofd.FileNames, sfd.FileName, interval,
+                                doPlots: DoDataProcessingPlotsCheckBox.Checked);
+                        }
                     }
                 }
+                
             }
             catch (Exception ex)
             {
@@ -135,6 +147,31 @@ namespace MRI_RF_TF_Tool
         private void AdjustTFButton_Click(object sender, EventArgs e) {
             AdjustTFForm atf = new AdjustTFForm();
             atf.Show(this);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void HeaderToolRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (HeaderToolRadioButton.Checked)
+            {
+                TemperatureModeRadioButton.Enabled = false;
+                VoltageModeRadioButton.Checked=true;
+            }
+            else
+            {
+                TemperatureModeRadioButton.Enabled = true;
+            }
         }
     }
 }
